@@ -4,6 +4,14 @@ import xml.etree.ElementTree as ET
 import os.path
 from typing import Dict
 import shutil
+from jinja2 import Environment, FileSystemLoader
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+templates_path = os.path.join(script_dir, 'templates')
+env = Environment(
+    loader=FileSystemLoader(templates_path),
+)
+
 
 gir_dir = '/usr/share/gir-1.0/'
 out_dir = 'out'
@@ -73,7 +81,7 @@ class Class:
                 print("Unhandled", x.tag)
                 pass
 
-    def _output_includes(self, f):
+    def _header_includes(self):
         def _fix_sep(s):
             return s.replace('.', '/')
         deps = set()
@@ -82,32 +90,37 @@ class Class:
         for i in self.interfaces:
             deps.add(_fix_sep(i))
         # TODO: add types from the methods
-        for d in deps:
-            f.write(f"#include \"{d}.hpp\"\n")
+        return deps
 
-    def _output_parents(self, f):
+    def _parents(self):
         def _fix_sep(s):
             return s.replace('.', '::')
-        comma = ':'
+        ret = []
         if self.parent:
-            f.write(f"    {comma} public {_fix_sep(self.parent)}\n")
-            comma = ','
+            ret.append(_fix_sep(self.parent))
         for i in self.interfaces:
-            f.write(f"    {comma} public virtual {_fix_sep(i)}\n")
-            comma = ','
+            ret.append(f"virtual {_fix_sep(i)}")
+        return ret
 
     def output(self, ns_dir):
+        template = env.get_template('class.hpp.in')
+
         fname = os.path.join(ns_dir, f"{self.name}.hpp")
         with open(fname, 'w') as f:
-            f.write("#pragma once\n\n")
-            self._output_includes(f)
-            f.write(f"\nnamespace {self.namespace.name} {{\n\n")
-            f.write(f"class {self.name}\n")
-            self._output_parents(f)
-            f.write("{\n")
-            f.write("public:\n")
-            f.write("};\n")
-            f.write(f"\n}} //namespace {self.namespace.name};\n")
+            f.write(template.render(
+                    cls_=self,
+                    includes=self._header_includes(),
+                    parents=self._parents()
+                    ))
+            # f.write("#pragma once\n\n")
+            # self._output_includes(f)
+            # f.write(f"\nnamespace {self.namespace.name} {{\n\n")
+            # f.write(f"class {self.name}\n")
+            # self._output_parents(f)
+            # f.write("{\n")
+            # f.write("public:\n")
+            # f.write("};\n")
+            # f.write(f"\n}} //namespace {self.namespace.name};\n")
 
 
 class Interface(Class):
@@ -204,7 +217,7 @@ def process(module, version):
 
 process('Gtk', '4.0')
 
-shutil.rmtree(out_dir)
+shutil.rmtree(out_dir, ignore_errors=True)
 os.makedirs(out_dir, exist_ok=True)
 
 for ns, namespace in namespaces.items():

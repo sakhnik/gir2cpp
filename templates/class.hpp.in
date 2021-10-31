@@ -1,0 +1,17 @@
+#pragma once
+
+{% for inc in includes -%}
+#include "{{ inc }}.hpp"
+{% endfor %}
+
+namespace {{ cls_.namespace.name }} {
+
+class {{ cls_.name }}
+{%- for p in parents %}
+    {{ "," if not loop.first else ":" }} public {{ p }}
+{%- endfor %}
+{
+public:
+};
+
+} //namespace {{ cls_.namespace.name }};
