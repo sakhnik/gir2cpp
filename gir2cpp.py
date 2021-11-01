@@ -34,11 +34,17 @@ class Type:
         self.c_type = et.attrib[xml.ns('type', 'c')]
         #print(self.name, self.c_type)
 
+    def cpp_name(self):
+        if not self.name or self.name == "none":
+            return "void"
+        return self.name.replace(".", "::")
+
 
 class Method:
     def __init__(self, et: ET, class_, xml: XmlContext):
         self.class_ = class_
         self.return_value = Type(et.find(xml.ns("return-value")).find(xml.ns("type")), xml)
+        self.name = et.attrib['name']
         self.params = []
 
 
@@ -112,15 +118,6 @@ class Class:
                     includes=self._header_includes(),
                     parents=self._parents()
                     ))
-            # f.write("#pragma once\n\n")
-            # self._output_includes(f)
-            # f.write(f"\nnamespace {self.namespace.name} {{\n\n")
-            # f.write(f"class {self.name}\n")
-            # self._output_parents(f)
-            # f.write("{\n")
-            # f.write("public:\n")
-            # f.write("};\n")
-            # f.write(f"\n}} //namespace {self.namespace.name};\n")
 
 
 class Interface(Class):

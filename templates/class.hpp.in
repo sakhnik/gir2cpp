@@ -12,6 +12,11 @@ class {{ cls_.name }}
 {%- endfor %}
 {
 public:
+    {% for m in cls_.methods.values() %}
+    {{ m.return_value.cpp_name() }}
+    {{ m.name }}(
+    );
+    {% endfor %}
 };
 
 } //namespace {{ cls_.namespace.name }};
