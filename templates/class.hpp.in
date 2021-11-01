@@ -1,13 +1,13 @@
 #pragma once
 
-{% for inc in includes -%}
+{% for inc in cls_.get_header_includes() -%}
 #include "{{ inc }}.hpp"
 {% endfor %}
 
 namespace {{ cls_.namespace.name }} {
 
 class {{ cls_.name }}
-{%- for p in parents %}
+{%- for p in cls_.get_parents() %}
     {{ "," if not loop.first else ":" }} public {{ p }}
 {%- endfor %}
 {
@@ -15,6 +15,9 @@ public:
     {% for m in cls_.methods.values() %}
     {{ m.return_value.cpp_name() }}
     {{ m.name }}(
+        {% for p in m.params %}
+        {{- p.cpp_name() }}{{ "," if not loop.last else "" }}
+        {% endfor -%}
     );
     {% endfor %}
 };

@@ -30,9 +30,15 @@ class XmlContext:
 
 class Type:
     def __init__(self, et: ET, xml: XmlContext):
-        self.name = et.attrib['name']
-        self.c_type = et.attrib[xml.ns('type', 'c')]
-        #print(self.name, self.c_type)
+        for x in et:
+            if x.tag == xml.ns("type"):
+                self.name = x.get('name')
+                self.c_type = x.attrib.get(xml.ns('type', 'c'))
+            elif x.tag == xml.ns("varargs"):
+                self.name = '...'
+            else:
+                self.name = None
+                print("Unknown type", x.tag)
 
     def cpp_name(self):
         if not self.name or self.name == "none":
@@ -43,9 +49,22 @@ class Type:
 class Method:
     def __init__(self, et: ET, class_, xml: XmlContext):
         self.class_ = class_
-        self.return_value = Type(et.find(xml.ns("return-value")).find(xml.ns("type")), xml)
         self.name = et.attrib['name']
         self.params = []
+
+        for x in et:
+            if x.tag == xml.ns("return-value"):
+                self.return_value = Type(x, xml)
+            elif x.tag == xml.ns("parameters"):
+                for y in x:
+                    if y.tag == xml.ns("parameter"):
+                        self.params.append(Type(y, xml))
+                    else:
+                        print("Unsupported", y.tag)
+            elif x.tag == xml.ns("doc") or x.tag == xml.ns("source-position"):
+                pass
+            else:
+                print("Unsupported", x.tag)
 
 
 class Constructor(Method):
@@ -87,7 +106,7 @@ class Class:
                 print("Unhandled", x.tag)
                 pass
 
-    def _header_includes(self):
+    def get_header_includes(self):
         def _fix_sep(s):
             return s.replace('.', '/')
         deps = set()
@@ -98,7 +117,7 @@ class Class:
         # TODO: add types from the methods
         return deps
 
-    def _parents(self):
+    def get_parents(self):
         def _fix_sep(s):
             return s.replace('.', '::')
         ret = []
@@ -113,11 +132,7 @@ class Class:
 
         fname = os.path.join(ns_dir, f"{self.name}.hpp")
         with open(fname, 'w') as f:
-            f.write(template.render(
-                    cls_=self,
-                    includes=self._header_includes(),
-                    parents=self._parents()
-                    ))
+            f.write(template.render(cls_=self))
 
 
 class Interface(Class):
