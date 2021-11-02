@@ -40,6 +40,17 @@ class Type:
                 self.name = None
                 print("Unknown type", x.tag)
 
+    built_in_types = frozenset((
+        "gchar", "guchar", "gshort", "gushort",
+        "gint", "guint", "glong", "gulong", "gssize", "gsize", "gintptr",
+        "guintptr", "gpointer", "gconstpointer", "gboolean", "gint8", "gint16",
+        "guint8", "guint16", "gint32", "guint32", "gint64", "guint64",
+        "gfloat", "gdouble", "GType", "utf8", "gunichar"
+    ))
+
+    def is_built_in(self):
+        return not self.name or self.name in Type.built_in_types
+
     def cpp_name(self):
         if not self.name or self.name == "none":
             return "void"
@@ -107,15 +118,18 @@ class Class:
                 pass
 
     def get_header_includes(self):
-        def _fix_sep(s):
-            return s.replace('.', '/')
         deps = set()
         if self.parent:
-            deps.add(_fix_sep(self.parent))
+            deps.add(self.parent)
         for i in self.interfaces:
-            deps.add(_fix_sep(i))
-        # TODO: add types from the methods
-        return deps
+            deps.add(i)
+        for m in self.methods.values():
+            if m.return_value and not m.return_value.is_built_in():
+                deps.add(m.return_value.name)
+            for p in m.params:
+                if not p.is_built_in():
+                    deps.add(p.name)
+        return [d.replace('.', '/') for d in deps]
 
     def get_parents(self):
         def _fix_sep(s):
