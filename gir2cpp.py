@@ -35,7 +35,13 @@ class Type:
                 self.name = x.get('name')
                 self.c_type = x.attrib.get(xml.ns('type', 'c'))
             elif x.tag == xml.ns("varargs"):
-                self.name = '...'
+                self.name = None
+                self.c_type = '...'
+            elif x.tag == xml.ns("array"):
+                self.c_type = x.attrib.get(xml.ns('type', 'c'))
+                self.name = None
+            elif x.tag == xml.ns("doc") or x.tag == xml.ns("attribute"):
+                pass
             else:
                 self.name = None
                 print("Unknown type", x.tag)
@@ -52,7 +58,9 @@ class Type:
         return not self.name or self.name in Type.built_in_types
 
     def cpp_name(self):
-        if not self.name or self.name == "none":
+        if not self.name:
+            return self.c_type
+        if self.name == "none":
             return "void"
         return self.name.replace(".", "::")
 
@@ -62,17 +70,26 @@ class Method:
         self.class_ = class_
         self.name = et.attrib['name']
         self.params = []
+        self.instance_parameter_idx = 0
 
         for x in et:
             if x.tag == xml.ns("return-value"):
                 self.return_value = Type(x, xml)
             elif x.tag == xml.ns("parameters"):
+                idx = 0
                 for y in x:
                     if y.tag == xml.ns("parameter"):
                         self.params.append(Type(y, xml))
+                        idx += 1
+                    elif y.tag == xml.ns("instance-parameter"):
+                        self.instance_parameter_idx = idx
                     else:
                         print("Unsupported", y.tag)
             elif x.tag == xml.ns("doc") or x.tag == xml.ns("source-position"):
+                pass
+            elif x.tag == xml.ns("doc-deprecated"):
+                pass
+            elif x.tag == xml.ns("attribute"):
                 pass
             else:
                 print("Unsupported", x.tag)
