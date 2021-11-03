@@ -33,6 +33,8 @@ class Type:
         for x in et:
             if x.tag == xml.ns("type"):
                 self.name = x.get('name')
+                if self.name == "none":
+                    self.name = None
                 self.c_type = x.attrib.get(xml.ns('type', 'c'))
             elif x.tag == xml.ns("varargs"):
                 self.name = None
