@@ -174,16 +174,16 @@ class Interface(Class):
 
 
 class Namespace:
-    def __init__(self, name):
+    def __init__(self, name, c_include):
         self.name = name
+        self.c_include = c_include
         self.aliases = {}
         self.classes = {}
 
     def add_alias(self, et: ET, xml: XmlContext):
         name = et.attrib['name']
-        type_et = et.find(xml.ns('type'))
-        type_name = type_et.attrib['name']
-        self.aliases[name] = type_name
+        c_type = et.attrib.get(xml.ns('type', 'c'))
+        self.aliases[name] = c_type
 
     def add_class(self, et: ET, xml: XmlContext):
         name = et.attrib['name']
@@ -196,8 +196,16 @@ class Namespace:
     def output(self, out_dir):
         ns_dir = os.path.join(out_dir, self.name)
         os.makedirs(ns_dir, exist_ok=True)
+
+        self._output_aliases(ns_dir)
         for c in self.classes.values():
             c.output(ns_dir)
+
+    def _output_aliases(self, ns_dir):
+        template = env.get_template('aliases.hpp.in')
+        fname = os.path.join(ns_dir, 'aliases.hpp')
+        with open(fname, 'w') as f:
+            f.write(template.render(ns=self))
 
 
 namespaces: Dict[str, Namespace] = {}
@@ -223,7 +231,7 @@ def process(module, version):
         try:
             namespace = namespaces[ns_name]
         except KeyError:
-            namespace = Namespace(ns_name)
+            namespace = Namespace(ns_name, c_include)
             namespaces[ns_name] = namespace
 
         ignore = frozenset(xml.ns(i) for i in (
@@ -238,7 +246,7 @@ def process(module, version):
                 pass
             elif x.tag == xml.ns("boxed", "glib"):
                 pass
-            elif x.tag == xml.ns("alias"):
+            elif x.tag == xml.ns("alias") or x.tag == xml.ns("record"):
                 namespace.add_alias(x, xml)
             elif x.tag == xml.ns("class"):
                 namespace.add_class(x, xml)

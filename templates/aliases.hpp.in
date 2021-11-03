@@ -1,0 +1,10 @@
+#pragma once
+
+#include <{{ ns.c_include }}>
+
+namespace {{ ns.name }} {
+{% for k,v in ns.aliases.items() %}
+using {{ k }} = {{ v }};
+{%- endfor %}
+
+} //namespace {{ ns.name }};

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "aliases.hpp"
 {% for inc in cls_.get_header_includes() -%}
 #include "{{ inc }}.hpp"
 {% endfor %}
