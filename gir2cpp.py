@@ -214,8 +214,8 @@ class Namespace:
 
     def parse(self, et: ET, xml: XmlContext):
         ignore = frozenset(xml.ns(i) for i in (
-            "function-macro", "constant", "function", "record", "docsection",
-            "callback", "bitfield", "union"
+            "function-macro", "constant", "function", "docsection",
+            "bitfield", "union"
         ))
 
         # c_id_pref = nstree.attrib[xml.ns('identifier-prefixes', 'c')]
@@ -225,7 +225,8 @@ class Namespace:
                 pass
             elif x.tag == xml.ns("boxed", "glib"):
                 pass
-            elif x.tag == xml.ns("alias") or x.tag == xml.ns("record"):
+            elif x.tag == xml.ns("alias") or x.tag == xml.ns("record") \
+                    or x.tag == xml.ns("callback"):
                 self.add_alias(x, xml)
             elif x.tag == xml.ns("class"):
                 self.add_class(x, xml)
