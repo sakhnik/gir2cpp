@@ -7,6 +7,7 @@
 #include "{{ inc }}.hpp"
 {% endfor %}
 
+namespace gir {
 namespace {{ cls_.namespace.name }} {
 
 class {{ cls_.name }}
@@ -21,3 +22,4 @@ public:
 };
 
 } //namespace {{ cls_.namespace.name }};
+} //namespace gir;

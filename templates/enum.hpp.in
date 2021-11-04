@@ -4,6 +4,7 @@
 
 #include "aliases.hpp"
 
+namespace gir {
 namespace {{ enum_.namespace.name }} {
 
 class {{ enum_.name }}
@@ -22,3 +23,4 @@ public:
 };
 
 } //namespace {{ enum_.namespace.name }};
+} //namespace gir;
