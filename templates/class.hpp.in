@@ -1,5 +1,7 @@
 #pragma once
 
+{%- import "common.hpp.in" as common %}
+
 #include "aliases.hpp"
 {% for inc in cls_.get_header_includes() -%}
 #include "{{ inc }}.hpp"
@@ -14,12 +16,7 @@ class {{ cls_.name }}
 {
 public:
     {% for m in cls_.methods.values() %}
-    {{ m.return_value.cpp_name() }}
-    {{ m.name }}(
-        {% for p in m.params %}
-        {{- p.cpp_name() }}{{ "," if not loop.last else "" }}
-        {% endfor -%}
-    );
+    {{ common.method(m) }}
     {% endfor %}
 };
 
