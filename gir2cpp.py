@@ -136,19 +136,31 @@ class Class:
                 print("Unhandled", x.tag)
                 pass
 
+    def _get_with_namespace(self, ident):
+        if '.' not in ident:
+            return f"{self.namespace.name}.{ident}"
+        return ident
+
     def get_header_includes(self):
         deps = set()
         if self.parent:
-            deps.add(self.parent)
+            deps.add(self._get_with_namespace(self.parent))
         for i in self.interfaces:
-            deps.add(i)
+            deps.add(self._get_with_namespace(i))
         for m in self.methods.values():
             if m.return_value and not m.return_value.is_built_in():
-                deps.add(m.return_value.name)
+                deps.add(self._get_with_namespace(m.return_value.name))
             for p in m.params:
                 if not p.is_built_in():
-                    deps.add(p.name)
-        return [d.replace('.', '/') for d in deps]
+                    deps.add(self._get_with_namespace(p.name))
+
+        def check_alias(d):
+            ns, ident = d.split('.')
+            if ident in namespaces[ns].aliases:
+                return f"{ns}.aliases"
+            return d
+
+        return [check_alias(d).replace('.', '/') for d in deps]
 
     def get_parents(self):
         def _fix_sep(s):
