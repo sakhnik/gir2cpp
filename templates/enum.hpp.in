@@ -1,0 +1,27 @@
+#pragma once
+
+#include "aliases.hpp"
+
+namespace {{ enum_.namespace.name }} {
+
+class {{ enum_.name }}
+{
+public:
+    enum
+    {
+        {%- for k,v in enum_.members %}
+        {{ k }} = {{ v }},
+        {%- endfor %}
+    };
+
+    {% for m in enum_.methods.values() %}
+    {{ m.return_value.cpp_name() }}
+    {{ m.name }}(
+        {% for p in m.params %}
+        {{- p.cpp_name() }}{{ "," if not loop.last else "" }}
+        {% endfor -%}
+    );
+    {% endfor %}
+};
+
+} //namespace {{ enum_.namespace.name }};

@@ -162,7 +162,6 @@ class Class:
 
     def output(self, ns_dir):
         template = env.get_template('class.hpp.in')
-
         fname = os.path.join(ns_dir, f"{self.name}.hpp")
         with open(fname, 'w') as f:
             f.write(template.render(cls_=self))
@@ -173,12 +172,69 @@ class Interface(Class):
         Class.__init__(self, et, namespace, xml)
 
 
+class Enumeration:
+    def __init__(self, et: ET, namespace, xml: XmlContext):
+        self.namespace = namespace
+        self.name = et.attrib['name']
+        self.c_type = et.attrib[xml.ns("type", "c")]
+        self.members = []
+        self.methods = {}
+
+        ignore = frozenset(xml.ns(i) for i in (
+            "doc", "source-position", "doc-deprecated"
+        ))
+
+        for x in et:
+            if x.tag in ignore:
+                pass
+            elif x.tag == xml.ns('member'):
+                mname = x.attrib['name']
+                c_ident = x.attrib[xml.ns("identifier", "c")]
+                self.members.append((mname, c_ident))
+            elif x.tag == xml.ns('function'):
+                self.methods[self.name] = Method(x, self, xml)
+            else:
+                print("Unhandled", x.tag)
+                pass
+
+    def output(self, ns_dir):
+        template = env.get_template('enum.hpp.in')
+        fname = os.path.join(ns_dir, f"{self.name}.hpp")
+        with open(fname, 'w') as f:
+            f.write(template.render(enum_=self))
+
+
 class Namespace:
     def __init__(self, name, c_include):
         self.name = name
         self.c_include = c_include
         self.aliases = {}
+        self.enumerations = {}
         self.classes = {}
+
+    def parse(self, et: ET, xml: XmlContext):
+        ignore = frozenset(xml.ns(i) for i in (
+            "function-macro", "constant", "function", "record", "docsection",
+            "callback", "bitfield", "union"
+        ))
+
+        # c_id_pref = nstree.attrib[xml.ns('identifier-prefixes', 'c')]
+        # c_sym_pref = nstree.attrib[xml.ns('symbol-prefixes', 'c')]
+        for x in et:
+            if x.tag in ignore:
+                pass
+            elif x.tag == xml.ns("boxed", "glib"):
+                pass
+            elif x.tag == xml.ns("alias") or x.tag == xml.ns("record"):
+                self.add_alias(x, xml)
+            elif x.tag == xml.ns("class"):
+                self.add_class(x, xml)
+            elif x.tag == xml.ns("interface"):
+                self.add_interface(x, xml)
+            elif x.tag == xml.ns("enumeration"):
+                self.add_enumeration(x, xml)
+            else:
+                print('Unhandled', x.tag)
 
     def add_alias(self, et: ET, xml: XmlContext):
         name = et.attrib['name']
@@ -193,19 +249,30 @@ class Namespace:
         name = et.attrib['name']
         self.classes[name] = Interface(et, self, xml)
 
+    def add_enumeration(self, et: ET, xml: XmlContext):
+        name = et.attrib['name']
+        self.enumerations[name] = Enumeration(et, self, xml)
+
     def output(self, out_dir):
         ns_dir = os.path.join(out_dir, self.name)
         os.makedirs(ns_dir, exist_ok=True)
-
         self._output_aliases(ns_dir)
-        for c in self.classes.values():
-            c.output(ns_dir)
+        self._output_enumerations(ns_dir)
+        self._output_classes(ns_dir)
 
     def _output_aliases(self, ns_dir):
         template = env.get_template('aliases.hpp.in')
         fname = os.path.join(ns_dir, 'aliases.hpp')
         with open(fname, 'w') as f:
             f.write(template.render(ns=self))
+
+    def _output_enumerations(self, ns_dir):
+        for e in self.enumerations.values():
+            e.output(ns_dir)
+
+    def _output_classes(self, ns_dir):
+        for c in self.classes.values():
+            c.output(ns_dir)
 
 
 namespaces: Dict[str, Namespace] = {}
@@ -226,35 +293,6 @@ def process(module, version):
     package = ''  # directory name
     c_include = ''
 
-    def process_namespace(nstree):
-        ns_name = nstree.attrib['name']
-        try:
-            namespace = namespaces[ns_name]
-        except KeyError:
-            namespace = Namespace(ns_name, c_include)
-            namespaces[ns_name] = namespace
-
-        ignore = frozenset(xml.ns(i) for i in (
-            "function-macro", "constant", "function", "record", "docsection",
-            "enumeration", "callback", "bitfield", "union"
-        ))
-
-        # c_id_pref = nstree.attrib[xml.ns('identifier-prefixes', 'c')]
-        # c_sym_pref = nstree.attrib[xml.ns('symbol-prefixes', 'c')]
-        for x in nstree:
-            if x.tag in ignore:
-                pass
-            elif x.tag == xml.ns("boxed", "glib"):
-                pass
-            elif x.tag == xml.ns("alias") or x.tag == xml.ns("record"):
-                namespace.add_alias(x, xml)
-            elif x.tag == xml.ns("class"):
-                namespace.add_class(x, xml)
-            elif x.tag == xml.ns("interface"):
-                namespace.add_interface(x, xml)
-            else:
-                print('Unhandled', x.tag)
-
     for x in root:
         if x.tag == xml.ns('include'):
             process(x.attrib['name'], x.attrib['version'])
@@ -263,7 +301,13 @@ def process(module, version):
         elif x.tag == xml.ns('include', 'c'):
             c_include = x.attrib['name']
         elif x.tag == xml.ns('namespace'):
-            process_namespace(x)
+            name = x.attrib['name']
+            try:
+                ns = namespaces[name]
+            except KeyError:
+                ns = Namespace(name, c_include)
+                namespaces[name] = ns
+            ns.parse(x, xml)
         else:
             print("Unhandled", x.tag, x.attrib)
 
