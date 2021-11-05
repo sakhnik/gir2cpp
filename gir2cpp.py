@@ -217,9 +217,9 @@ class Enumeration:
 
 
 class Namespace:
-    def __init__(self, name, c_include):
+    def __init__(self, name, c_includes):
         self.name = name
-        self.c_include = c_include
+        self.c_includes = c_includes
         self.aliases = {}
         self.enumerations = {}
         self.classes = {}
@@ -304,7 +304,7 @@ def process(module, version):
     root = tree.getroot()
 
     package = ''  # directory name
-    c_include = ''
+    c_includes = []
 
     for x in root:
         if x.tag == xml.ns('include'):
@@ -312,13 +312,13 @@ def process(module, version):
         elif x.tag == xml.ns('package'):
             package = x.attrib['name']
         elif x.tag == xml.ns('include', 'c'):
-            c_include = x.attrib['name']
+            c_includes.append(x.attrib['name'])
         elif x.tag == xml.ns('namespace'):
             name = x.attrib['name']
             try:
                 ns = namespaces[name]
             except KeyError:
-                ns = Namespace(name, c_include)
+                ns = Namespace(name, c_includes)
                 namespaces[name] = ns
             ns.parse(x, xml)
         else:

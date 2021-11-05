@@ -1,6 +1,8 @@
 #pragma once
 
-#include <{{ ns.c_include }}>
+{% for i in ns.c_includes %}
+#include <{{ i }}>
+{%- endfor %}
 
 namespace gir {
 namespace {{ ns.name }} {
