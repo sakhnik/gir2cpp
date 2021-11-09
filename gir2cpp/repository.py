@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Dict
 import os
 import shutil
+import re
 import xml.etree.ElementTree as ET
 from jinja2 import Environment, FileSystemLoader
 from . import namespace
@@ -22,12 +23,16 @@ class Repository:
 
         self.namespaces: Dict[str, Namespace] = {}
         self.processed_modules = set()
+        self.ignore = re.compile("^(Gtk::Print.*)$")
 
     def get_namespace(self, ns):
         return self.namespaces[ns]
 
     def get_template(self, name):
         return self.env.get_template(name)
+
+    def should_ignore(self, ns, symbol):
+        return not self.ignore.match(f"{ns}::{symbol}") is None
 
     def process(self, module, version):
         if module in self.processed_modules:

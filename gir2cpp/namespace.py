@@ -44,19 +44,27 @@ class Namespace:
 
     def add_alias(self, et: ET, xml: Xml):
         name = et.attrib['name']
+        if self.get_repository().should_ignore(self.name, name):
+            return
         c_type = et.attrib.get(xml.ns('type', 'c'))
         self.aliases[name] = c_type
 
     def add_class(self, et: ET, xml: Xml):
         name = et.attrib['name']
+        if self.get_repository().should_ignore(self.name, name):
+            return
         self.classes[name] = Class(et, self, xml)
 
     def add_interface(self, et: ET, xml: Xml):
         name = et.attrib['name']
+        if self.get_repository().should_ignore(self.name, name):
+            return
         self.classes[name] = Interface(et, self, xml)
 
     def add_enumeration(self, et: ET, xml: Xml):
         name = et.attrib['name']
+        if self.get_repository().should_ignore(self.name, name):
+            return
         self.enumerations[name] = Enumeration(et, self, xml)
 
     def output(self, out_dir):
