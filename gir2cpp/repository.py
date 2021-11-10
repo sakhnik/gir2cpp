@@ -23,7 +23,15 @@ class Repository:
 
         self.namespaces: Dict[str, Namespace] = {}
         self.processed_modules = set()
-        self.ignore = re.compile("^(Gtk::Print.*)$")
+        self.ignore = re.compile(r"""^(
+                Gtk::Print.*
+                |
+                Gio::SettingsBackend.*
+                |
+                GLib::StatBuf
+                |
+                Gsk::.*?Renderer.*
+                )$""", re.VERBOSE)
 
     def get_namespace(self, ns):
         return self.namespaces[ns]

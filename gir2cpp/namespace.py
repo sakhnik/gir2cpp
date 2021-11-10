@@ -30,8 +30,11 @@ class Namespace:
                 pass
             elif x.tag == xml.ns("boxed", "glib"):
                 pass
-            elif x.tag == xml.ns("alias") or x.tag == xml.ns("record") \
-                    or x.tag == xml.ns("callback"):
+            elif x.tag == xml.ns("alias") \
+                    or x.tag == xml.ns("record") \
+                    or x.tag == xml.ns("callback") \
+                    or x.tag == xml.ns("bitfield"):
+                # TODO: handle records, bitfields like enumerations
                 self.add_alias(x, xml)
             elif x.tag == xml.ns("class"):
                 self.add_class(x, xml)

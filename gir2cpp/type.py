@@ -7,9 +7,13 @@ class Type:
         for x in et:
             if x.tag == xml.ns("type"):
                 self.name = x.get('name')
-                if self.name == "none" or self.name == "utf8":
-                    self.name = None
                 self.c_type = x.attrib.get(xml.ns('type', 'c'))
+                if self.name == "none" or self.name == "utf8" \
+                        or self.name == "Value":
+                    self.name = None
+                elif self.name == "va_list":
+                    self.name = None
+                    self.c_type == '...'
             elif x.tag == xml.ns("varargs"):
                 self.name = None
                 self.c_type = '...'
