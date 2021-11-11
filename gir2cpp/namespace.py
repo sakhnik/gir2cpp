@@ -70,6 +70,14 @@ class Namespace:
             return
         self.enumerations[name] = Enumeration(et, self, xml)
 
+    def get_c_includes(self):
+        for i in self.c_includes:
+            yield i
+        # Inject GObject into every namespace
+        if self.name != "GObject":
+            for i in self.get_repository().get_namespace("GObject").c_includes:
+                yield i
+
     def output(self, out_dir):
         ns_dir = os.path.join(out_dir, self.name)
         os.makedirs(ns_dir, exist_ok=True)

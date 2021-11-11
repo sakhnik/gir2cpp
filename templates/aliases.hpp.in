@@ -1,6 +1,6 @@
 #pragma once
 
-{% for i in ns.c_includes %}
+{% for i in ns.get_c_includes() %}
 #include <{{ i }}>
 {%- endfor %}
 

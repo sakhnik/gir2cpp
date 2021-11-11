@@ -32,6 +32,8 @@ class Repository:
                 |
                 Gsk::.*?Renderer.*
                 )$""", re.VERBOSE)
+        # GObject is referenced implicitly by everyone
+        self.process('GObject', '2.0')
 
     def get_namespace(self, ns):
         return self.namespaces[ns]
