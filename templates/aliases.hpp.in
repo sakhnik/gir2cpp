@@ -7,7 +7,7 @@
 namespace gir {
 namespace {{ ns.name }} {
 {% for k,v in ns.aliases.items() %}
-using {{ k }} = {{ v }};
+using {{ k }} = ::{{ v }};
 {%- endfor %}
 
 } //namespace {{ ns.name }};
