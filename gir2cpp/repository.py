@@ -31,6 +31,8 @@ class Repository:
                 GLib::StatBuf
                 |
                 Gsk::.*?Renderer.*
+                |
+                GLib::Unix.*
                 )$""", re.VERBOSE)
         # GObject is referenced implicitly by everyone
         self.process('GObject', '2.0')
