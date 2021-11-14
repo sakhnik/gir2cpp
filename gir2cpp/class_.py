@@ -53,31 +53,50 @@ class Class:
             return f"{self.namespace.name}.{ident}"
         return ident
 
+    def _is_alias(self, d):
+        ns, ident = d.split('.')
+        try:
+            namespace = self.get_repository().get_namespace(ns)
+        except KeyError:
+            print(f"Unknown symbol: {d}")
+            raise
+        return ident in namespace.aliases
+
     def get_header_includes(self):
         deps = set()
         if self.parent:
             deps.add(self._get_with_namespace(self.parent))
         for i in self.interfaces:
             deps.add(self._get_with_namespace(i))
+
+        def add_alias(t):
+            fqname = self._get_with_namespace(t)
+            if self._is_alias(fqname):
+                ns, _ = fqname.split('.')
+                deps.add(f'{ns}.aliases')
+
         for m in self.methods.values():
             if m.return_value and not m.return_value.is_built_in():
-                deps.add(self._get_with_namespace(m.return_value.name))
+                add_alias(m.return_value.name)
             for p in m.params:
                 if not p.is_built_in():
-                    deps.add(self._get_with_namespace(p.name))
+                    add_alias(p.name)
 
-        def check_alias(d):
-            ns, ident = d.split('.')
-            try:
-                namespace = self.get_repository().get_namespace(ns)
-            except KeyError:
-                print(f"Unknown symbol: {d}")
-                raise
-            if ident in namespace.aliases:
-                return f"{ns}.aliases"
-            return d
+        return set(d.replace('.', '/') for d in deps)
 
-        return set(check_alias(d).replace('.', '/') for d in deps)
+    def get_forward_decls(self):
+        deps = set()
+        for m in self.methods.values():
+            if m.return_value and not m.return_value.is_built_in():
+                fqname = self._get_with_namespace(m.return_value.name)
+                if not self._is_alias(fqname):
+                    deps.add(fqname)
+            for p in m.params:
+                if not p.is_built_in():
+                    fqname = self._get_with_namespace(p.name)
+                    if not self._is_alias(fqname):
+                        deps.add(fqname)
+        return [d.split('.') for d in deps]
 
     def get_parents(self):
         def _fix_sep(s):

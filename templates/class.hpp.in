@@ -8,6 +8,11 @@
 {% endfor %}
 
 namespace gir {
+
+{% for ns,cl in cls_.get_forward_decls() -%}
+namespace {{ ns }} { class {{ cl }}; }
+{% endfor %}
+
 namespace {{ cls_.namespace.name }} {
 
 class {{ cls_.name }}

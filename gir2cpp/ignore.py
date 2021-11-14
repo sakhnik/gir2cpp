@@ -21,8 +21,6 @@ class Ignore:
             HarfBuzz::.*
             |
             GdkPixbuf::.*
-            |
-            GObject::Binding
             )$""", re.VERBOSE)
 
     @staticmethod
