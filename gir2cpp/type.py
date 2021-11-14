@@ -4,12 +4,12 @@ import xml.etree.ElementTree as ET
 
 
 class Type:
-    def __init__(self, et: ET, xml: Xml):
+    def __init__(self, et: ET, namespace, xml: Xml):
         for x in et:
             if x.tag == xml.ns("type"):
                 self.name = x.get('name')
                 self.c_type = x.attrib.get(xml.ns('type', 'c'))
-                if Ignore.skip_dotted(self.name):
+                if Ignore.skip_check(namespace.name, self.name):
                     self.name = None
                 elif self.name == "none" or self.name == "utf8" \
                         or self.name == "Value":

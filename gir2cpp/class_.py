@@ -77,7 +77,7 @@ class Class:
                 return f"{ns}.aliases"
             return d
 
-        return [check_alias(d).replace('.', '/') for d in deps]
+        return set(check_alias(d).replace('.', '/') for d in deps)
 
     def get_parents(self):
         def _fix_sep(s):

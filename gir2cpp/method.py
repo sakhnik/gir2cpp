@@ -12,12 +12,12 @@ class Method:
 
         for x in et:
             if x.tag == xml.ns("return-value"):
-                self.return_value = Type(x, xml)
+                self.return_value = Type(x, class_.namespace, xml)
             elif x.tag == xml.ns("parameters"):
                 idx = 0
                 for y in x:
                     if y.tag == xml.ns("parameter"):
-                        self.params.append(Type(y, xml))
+                        self.params.append(Type(y, class_.namespace, xml))
                         idx += 1
                     elif y.tag == xml.ns("instance-parameter"):
                         self.instance_parameter_idx = idx
