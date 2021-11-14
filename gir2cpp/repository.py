@@ -2,11 +2,11 @@ from pathlib import Path
 from typing import Dict
 import os
 import shutil
-import re
 import xml.etree.ElementTree as ET
 from jinja2 import Environment, FileSystemLoader
 from . import namespace
 from .xml import Xml
+from .ignore import Ignore
 
 
 Namespace = namespace.Namespace
@@ -23,21 +23,6 @@ class Repository:
 
         self.namespaces: Dict[str, Namespace] = {}
         self.processed_modules = set()
-        self.ignore = re.compile(r"""^(
-                Gtk::Print.*
-                |
-                Gio::SettingsBackend.*
-                |
-                GLib::StatBuf
-                |
-                Gsk::.*?Renderer.*
-                |
-                GLib::Unix.*
-                |
-                HarfBuzz::.*
-                |
-                GdkPixbuf::.*
-                )$""", re.VERBOSE)
         # GObject is referenced implicitly by everyone
         self.process('GObject', '2.0')
 
@@ -46,9 +31,6 @@ class Repository:
 
     def get_template(self, name):
         return self.env.get_template(name)
-
-    def should_ignore(self, ns, symbol):
-        return not self.ignore.match(f"{ns}::{symbol}") is None
 
     def process(self, module, version):
         if module in self.processed_modules:
@@ -73,12 +55,13 @@ class Repository:
                 c_includes.append(x.attrib['name'])
             elif x.tag == xml.ns('namespace'):
                 name = x.attrib['name']
-                try:
-                    ns = self.namespaces[name]
-                except KeyError:
-                    ns = Namespace(name, c_includes, self)
-                    self.namespaces[name] = ns
-                ns.parse(x, xml)
+                if not Ignore.skip(name):
+                    try:
+                        ns = self.namespaces[name]
+                    except KeyError:
+                        ns = Namespace(name, c_includes, self)
+                        self.namespaces[name] = ns
+                    ns.parse(x, xml)
             else:
                 print("Unhandled", x.tag, x.attrib)
 

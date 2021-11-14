@@ -1,6 +1,7 @@
 from .xml import Xml
 from .class_ import Class, Interface
 from .enumeration import Enumeration
+from .ignore import Ignore
 import xml.etree.ElementTree as ET
 import os
 
@@ -20,7 +21,7 @@ class Namespace:
     def parse(self, et: ET, xml: Xml):
         ignore = frozenset(xml.ns(i) for i in (
             "function-macro", "constant", "function", "docsection",
-            "bitfield", "union"
+            "union"
         ))
 
         # c_id_pref = nstree.attrib[xml.ns('identifier-prefixes', 'c')]
@@ -47,26 +48,26 @@ class Namespace:
 
     def add_alias(self, et: ET, xml: Xml):
         name = et.attrib['name']
-        if self.get_repository().should_ignore(self.name, name):
+        if Ignore.skip(self.name, name):
             return
         c_type = et.attrib.get(xml.ns('type', 'c'))
         self.aliases[name] = c_type
 
     def add_class(self, et: ET, xml: Xml):
         name = et.attrib['name']
-        if self.get_repository().should_ignore(self.name, name):
+        if Ignore.skip(self.name, name):
             return
         self.classes[name] = Class(et, self, xml)
 
     def add_interface(self, et: ET, xml: Xml):
         name = et.attrib['name']
-        if self.get_repository().should_ignore(self.name, name):
+        if Ignore.skip(self.name, name):
             return
         self.classes[name] = Interface(et, self, xml)
 
     def add_enumeration(self, et: ET, xml: Xml):
         name = et.attrib['name']
-        if self.get_repository().should_ignore(self.name, name):
+        if Ignore.skip(self.name, name):
             return
         self.enumerations[name] = Enumeration(et, self, xml)
 

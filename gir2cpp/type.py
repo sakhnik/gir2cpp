@@ -1,4 +1,5 @@
 from .xml import Xml
+from .ignore import Ignore
 import xml.etree.ElementTree as ET
 
 
@@ -8,7 +9,9 @@ class Type:
             if x.tag == xml.ns("type"):
                 self.name = x.get('name')
                 self.c_type = x.attrib.get(xml.ns('type', 'c'))
-                if self.name == "none" or self.name == "utf8" \
+                if Ignore.skip_dotted(self.name):
+                    self.name = None
+                elif self.name == "none" or self.name == "utf8" \
                         or self.name == "Value":
                     self.name = None
                 elif self.name == "va_list":

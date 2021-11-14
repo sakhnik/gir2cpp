@@ -1,5 +1,6 @@
 from .xml import Xml
 from .method import Method, Constructor
+from .ignore import Ignore
 import xml.etree.ElementTree as ET
 import os.path
 
@@ -8,9 +9,12 @@ class Class:
     def __init__(self, et: ET, namespace, xml: Xml):
         self.namespace = namespace
         self.name = et.attrib['name']
-        self.parent = et.attrib.get('parent')
         self.methods = {}
         self.interfaces = set()
+
+        self.parent = et.attrib.get('parent')
+        if Ignore.skip_check(self.namespace.name, self.parent):
+            self.parent = None
 
         ignore = frozenset(xml.ns(i) for i in (
             "property", "doc", "source-position",
@@ -19,10 +23,13 @@ class Class:
 
         for x in et:
             if x.tag in ignore:
-                pass
+                continue
             elif x.tag == xml.ns('signal', 'glib'):
-                pass
-            elif x.tag == xml.ns('implements'):
+                continue
+            name = x.attrib['name']
+            if Ignore.skip_check(self.namespace.name, name):
+                continue
+            if x.tag == xml.ns('implements'):
                 self.interfaces.add(x.attrib['name'])
             elif x.tag == xml.ns('method') or x.tag == xml.ns('virtual-method'):
                 name = x.attrib['name']
@@ -61,7 +68,11 @@ class Class:
 
         def check_alias(d):
             ns, ident = d.split('.')
-            namespace = self.get_repository().get_namespace(ns)
+            try:
+                namespace = self.get_repository().get_namespace(ns)
+            except KeyError:
+                print(f"Unknown symbol: {d}")
+                raise
             if ident in namespace.aliases:
                 return f"{ns}.aliases"
             return d
@@ -79,7 +90,6 @@ class Class:
         return ret
 
     def output(self, ns_dir):
-        repository = self.namespace.repository
         template = self.get_repository().get_template('class.hpp.in')
         fname = os.path.join(ns_dir, f"{self.name}.hpp")
         with open(fname, 'w') as f:
