@@ -1,5 +1,6 @@
 from .xml import Xml
 from .type import Type
+from .keywords import Keywords
 import xml.etree.ElementTree as ET
 
 
@@ -32,7 +33,16 @@ class Method:
             else:
                 print("Unsupported", x.tag)
 
+    def is_static(self):
+        return False
+
+    def get_name(self):
+        return Keywords.fix_name(self.name)
+
 
 class Constructor(Method):
     def __init__(self, et: ET, class_, xml: Xml):
         Method.__init__(self, et, class_, xml)
+
+    def is_static(self):
+        return True
