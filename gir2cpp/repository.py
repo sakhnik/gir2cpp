@@ -33,6 +33,10 @@ class Repository:
                 Gsk::.*?Renderer.*
                 |
                 GLib::Unix.*
+                |
+                HarfBuzz::.*
+                |
+                GdkPixbuf::.*
                 )$""", re.VERBOSE)
         # GObject is referenced implicitly by everyone
         self.process('GObject', '2.0')
