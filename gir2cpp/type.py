@@ -14,6 +14,8 @@ class Type:
                 elif self.name == "none" or self.name == "utf8" \
                         or self.name == "Value":
                     self.name = None
+                elif self.is_built_in():
+                    self.name = None
                 elif self.name == "va_list":
                     self.name = None
                     self.c_type == '...'
@@ -43,6 +45,9 @@ class Type:
     def cpp_name(self):
         if not self.name:
             return self.c_type
-        if self.name == "none":
-            return "void"
         return self.name.replace(".", "::")
+
+    def transform_to_cpp(self):
+        if self.name:
+            return "G_OBJECT"
+        return ""

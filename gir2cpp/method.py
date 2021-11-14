@@ -8,6 +8,7 @@ class Method:
     def __init__(self, et: ET, class_, xml: Xml):
         self.class_ = class_
         self.name = et.attrib['name']
+        self.c_ident = et.attrib[xml.ns('identifier', 'c')]
         self.params = []
         self.instance_parameter_idx = 0
 
@@ -38,6 +39,10 @@ class Method:
 
     def get_name(self):
         return Keywords.fix_name(self.name)
+
+    def has_return(self):
+        return self.return_value is not None \
+            and self.return_value.c_type != 'void'
 
 
 class Constructor(Method):

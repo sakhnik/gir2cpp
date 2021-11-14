@@ -2,6 +2,7 @@
 
 {%- import "common.hpp.in" as common %}
 
+#include "gir/Base.hpp"
 #include "aliases.hpp"
 {% for inc in cls_.get_header_includes() -%}
 #include "{{ inc }}.hpp"
@@ -16,11 +17,17 @@ namespace {{ ns }} { class {{ cl }}; }
 namespace {{ cls_.namespace.name }} {
 
 class {{ cls_.name }}
+    : public gir::Base<{{ cls_.name }}>
 {%- for p in cls_.get_parents() %}
-    {{ "," if not loop.first else ":" }} public {{ p }}
+    , public {{ p }}
 {%- endfor %}
 {
 public:
+    {{ cls_.name }}(::GObject *o = nullptr)
+    {
+        _g_obj = o;
+    }
+
     {% for m in cls_.methods.values() %}
     {{ common.method_decl(m) }}
     {% endfor %}
