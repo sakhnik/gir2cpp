@@ -84,7 +84,7 @@ class Class:
 
         return set(d.replace('.', '/') for d in deps)
 
-    def get_forward_decls(self):
+    def _get_extern_types(self):
         deps = set()
         for m in self.methods.values():
             if m.return_value and not m.return_value.is_built_in():
@@ -96,6 +96,10 @@ class Class:
                     fqname = self._get_with_namespace(p.name)
                     if not self._is_alias(fqname):
                         deps.add(fqname)
+        return deps
+
+    def get_forward_decls(self):
+        deps = self._get_extern_types()
         return [d.split('.') for d in deps]
 
     def get_parents(self):
@@ -109,8 +113,18 @@ class Class:
         return ret
 
     def output(self, ns_dir):
+        self._output_header(ns_dir)
+        self._output_impl(ns_dir)
+
+    def _output_header(self, ns_dir):
         template = self.get_repository().get_template('class.hpp.in')
         fname = os.path.join(ns_dir, f"{self.name}.hpp")
+        with open(fname, 'w') as f:
+            f.write(template.render(cls_=self))
+
+    def _output_impl(self, ns_dir):
+        template = self.get_repository().get_template('class.cpp.in')
+        fname = os.path.join(ns_dir, f"{self.name}.cpp")
         with open(fname, 'w') as f:
             f.write(template.render(cls_=self))
 

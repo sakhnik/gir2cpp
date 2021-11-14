@@ -18,7 +18,7 @@ public:
     };
 
     {% for m in enum_.methods.values() %}
-    {{ common.method(m) }}
+    {{ common.method_decl(m) }}
     {% endfor %}
 };
 

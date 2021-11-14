@@ -1,0 +1,18 @@
+{%- import "common.hpp.in" as common %}
+
+#include "{{ cls_.name }}.hpp"
+{% for ns, cl in cls_.get_forward_decls() -%}
+#include "{{ ns + '/' + cl }}.hpp"
+{% endfor %}
+
+namespace gir {
+namespace {{ cls_.namespace.name }} {
+
+{% for m in cls_.methods.values() %}
+{{ common.method_def(cls_, m) }}
+{
+}
+{% endfor %}
+
+} //namespace {{ cls_.namespace.name }};
+} //namespace gir;
