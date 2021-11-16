@@ -17,7 +17,7 @@ namespace {{ ns }} { class {{ cl }}; }
 namespace {{ cls_.namespace.name }} {
 
 class {{ cls_.name }}
-    : public gir::Base<{{ cls_.name }}>
+    : public virtual gir::Base
 {%- for p in cls_.get_parents() %}
     , public {{ p }}
 {%- endfor %}
