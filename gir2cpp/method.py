@@ -19,7 +19,9 @@ class Method:
                 idx = 0
                 for y in x:
                     if y.tag == xml.ns("parameter"):
-                        self.params.append(Type(y, class_.namespace, xml))
+                        name = y.attrib['name']
+                        type = Type(y, class_.namespace, xml)
+                        self.params.append((name, type))
                         idx += 1
                     elif y.tag == xml.ns("instance-parameter"):
                         self.instance_parameter_idx = idx

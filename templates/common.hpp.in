@@ -2,8 +2,8 @@
     {{ "static" if m.is_static() else "" }}
     {{ m.return_value.cpp_name() }}
     {{ m.get_name() }}(
-        {% for p in m.params %}
-        {{- p.cpp_name() }}{{ "," if not loop.last else "" }}
+        {% for pname, ptype in m.params %}
+        {{- ptype.cpp_name() }}{{ "," if not loop.last else "" }}
         {% endfor -%}
     );
 {%- endmacro %}
@@ -11,8 +11,8 @@
 {% macro method_def(cl, m) -%}
 {{ m.return_value.cpp_name() }}
 {{cl.name}}::{{ m.get_name() }}(
-    {% for p in m.params %}
-    {{- p.cpp_name() }} p{{ loop.index0 }} {{- "," if not loop.last else "" }}
+    {% for pname, ptype in m.params %}
+    {{- ptype.cpp_name() }} {{ pname }} {{- "," if not loop.last else "" }}
     {% endfor -%}
 )
 {%- endmacro %}

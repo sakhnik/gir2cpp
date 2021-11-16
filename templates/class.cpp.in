@@ -11,27 +11,22 @@ namespace {{ cls_.namespace.name }} {
 {% for m in cls_.methods.values() %}
 {{ common.method_def(cls_, m) }}
 {
-    {% for p in m.params %}
-    {{ p.c_type }} t{{ loop.index0 }} = p{{ loop.index0 }};
+    {% for pname, ptype in m.params %}
+    {{ ptype.c_type }} t_{{ pname }} = {{ pname }};
     {% endfor -%}
 
     {% if m.has_return() %}
+    {{ m.return_value.c_type }} r =
+    {% endif -%}
 
-    {{ m.return_value.c_type }} r = {{ m.c_ident }}(
-    {% for p in m.params %}
-        t{{ loop.index0 }} {{- "," if not loop.last else "" }}
+    {{ m.c_ident }}(
+    {% for pname, ptype in m.params %}
+        t_{{ pname }} {{- "," if not loop.last else "" }}
     {% endfor -%}
     );
 
+    {% if m.has_return() %}
     return {{ m.return_value.transform_to_cpp() }}(r);
-
-    {%- else %}
-
-    {{ m.c_ident }}(
-    {% for p in m.params %}
-        t{{ loop.index0 }} {{- "," if not loop.last else "" }}
-    {% endfor -%}
-
     {% endif %}
 }
 {% endfor %}

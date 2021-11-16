@@ -78,9 +78,9 @@ class Class:
         for m in self.methods.values():
             if m.return_value and not m.return_value.is_built_in():
                 add_alias(m.return_value.name)
-            for p in m.params:
-                if not p.is_built_in():
-                    add_alias(p.name)
+            for _, ptype in m.params:
+                if not ptype.is_built_in():
+                    add_alias(ptype.name)
 
         return set(d.replace('.', '/') for d in deps)
 
@@ -91,9 +91,9 @@ class Class:
                 fqname = self._get_with_namespace(m.return_value.name)
                 if not self._is_alias(fqname):
                     deps.add(fqname)
-            for p in m.params:
-                if not p.is_built_in():
-                    fqname = self._get_with_namespace(p.name)
+            for _, ptype in m.params:
+                if not ptype.is_built_in():
+                    fqname = self._get_with_namespace(ptype.name)
                     if not self._is_alias(fqname):
                         deps.add(fqname)
         return deps
