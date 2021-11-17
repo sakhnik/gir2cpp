@@ -20,8 +20,13 @@ namespace {{ cls_.namespace.name }} {
     {% endif -%}
 
     {{ m.c_ident }}(
-    {% for pname, ptype in m.params %}
-        t_{{ pname }} {{- "," if not loop.last else "" }}
+    {% for pname, ptype in m.c_params %}
+        {% if loop.index0 == m.get_instance_parameter_idx() -%}
+        G_TYPE_CHECK_INSTANCE_CAST(_g_obj, {{ m.class_.get_type }}(), {{ m.class_.c_type }})
+        {% else -%}
+        t_{{ pname }}
+        {% endif -%}
+        {{- "," if not loop.last else "" }}
     {% endfor -%}
     );
 

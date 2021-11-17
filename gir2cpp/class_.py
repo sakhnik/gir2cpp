@@ -11,6 +11,12 @@ class Class:
         self.name = et.attrib['name']
         self.methods = {}
         self.interfaces = set()
+        try:
+            self.c_type = et.attrib[xml.ns("type", "c")]
+        except KeyError:
+            # Hack for the classes that don't have c:type
+            self.c_type = et.attrib[xml.ns("type-name", "glib")]
+        self.get_type = et.attrib[xml.ns('get-type', 'glib')]
 
         self.parent = et.attrib.get('parent')
         if Ignore.skip_check(self.namespace.name, self.parent):
