@@ -3,7 +3,7 @@
     {{ m.return_value.cpp_name() }}
     {{ m.get_name() }}(
         {% for pname, ptype in m.params %}
-        {{- ptype.cpp_name() }}{{ "," if not loop.last else "" }}
+        {{- ptype.cpp_name() }} {{ pname }} {{ "," if not loop.last else "" }}
         {% endfor -%}
     );
 {%- endmacro %}

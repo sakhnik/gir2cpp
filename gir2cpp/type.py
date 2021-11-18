@@ -49,5 +49,6 @@ class Type:
 
     def transform_to_cpp(self):
         if self.name:
-            return "G_OBJECT"
+            # using GObject = ::GObject; return "G_OBJECT"
+            return "reinterpret_cast<::GObject*>"
         return ""
