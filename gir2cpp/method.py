@@ -21,6 +21,8 @@ class Method:
                 for y in x:
                     if y.tag == xml.ns("parameter"):
                         name = y.attrib['name']
+                        if name == '...':
+                            name = ''
                         type = Type(y, class_.namespace, xml)
                         self.params.append((name, type))
                         self.c_params.append((name, type))

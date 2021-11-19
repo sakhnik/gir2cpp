@@ -11,29 +11,17 @@ namespace {{ cls_.namespace.name }} {
 {% for m in cls_.methods.values() %}
 {{ common.method_def(cls_, m) }}
 {
-    {% for pname, ptype in m.params %}
-    {{ ptype.c_type }} t_{{ pname }} = {{ pname }};
-    {% endfor -%}
-
-    {% if m.has_return() %}
-    {{ m.return_value.c_type }} r =
-    {% endif -%}
-
+    return {{ m.return_value.transform_to_cpp() }}(
     {{ m.c_ident }}(
     {% for pname, ptype in m.c_params %}
         {% if loop.index0 == m.get_instance_parameter_idx() -%}
-        //G_TYPE_CHECK_INSTANCE_CAST(_g_obj, {{ m.class_.get_type }}(), {{ m.class_.c_type }})
         reinterpret_cast<{{ m.class_.c_type }}*>(_g_obj)
         {% else -%}
-        t_{{ pname }}
+        {{ pname }}
         {% endif -%}
         {{- "," if not loop.last else "" }}
     {% endfor -%}
-    );
-
-    {% if m.has_return() %}
-    return {{ m.return_value.transform_to_cpp() }}(r);
-    {% endif %}
+    ));
 }
 {% endfor %}
 
