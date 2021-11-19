@@ -10,6 +10,9 @@ class Base
 {
 protected:
     ::GObject *_g_obj = nullptr;
+
+public:
+    ::GObject* g_obj() const { return _g_obj; }
 };
 
 } //namespace gir;

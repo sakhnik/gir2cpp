@@ -55,5 +55,5 @@ class Type:
 
     def transform_to_c(self, pname):
         if self.name:
-            return f"reinterpret_cast<{self.c_type}>({pname}._g_obj)"
+            return f"reinterpret_cast<{self.c_type}>({pname}.g_obj())"
         return pname
