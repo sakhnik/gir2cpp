@@ -28,7 +28,7 @@ public:
         _g_obj = o;
     }
 
-    {% for m in cls_.methods.values() %}
+    {% for m in cls_.get_plain_methods() %}
     {{ common.method_decl(m) }}
     {% endfor %}
 };

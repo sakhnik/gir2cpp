@@ -52,3 +52,8 @@ class Type:
             # using GObject = ::GObject; return "G_OBJECT"
             return "reinterpret_cast<::GObject*>"
         return ""
+
+    def transform_to_c(self, pname):
+        if self.name:
+            return f"reinterpret_cast<{self.c_type}>({pname}._g_obj)"
+        return pname

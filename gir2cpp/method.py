@@ -12,6 +12,7 @@ class Method:
         self.params = []
         self.c_params = []
         self.instance_parameter_idx = 0
+        self.is_vararg = False
 
         for x in et:
             if x.tag == xml.ns("return-value"):
@@ -22,6 +23,7 @@ class Method:
                     if y.tag == xml.ns("parameter"):
                         name = y.attrib['name']
                         if name == '...':
+                            self.is_vararg = True
                             name = ''
                         type = Type(y, class_.namespace, xml)
                         self.params.append((name, type))

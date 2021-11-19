@@ -9,7 +9,7 @@ class Class:
     def __init__(self, et: ET, namespace, xml: Xml):
         self.namespace = namespace
         self.name = et.attrib['name']
-        self.methods = {}
+        self.methods = []
         self.interfaces = set()
         try:
             self.c_type = et.attrib[xml.ns("type", "c")]
@@ -40,13 +40,13 @@ class Class:
             elif x.tag == xml.ns('method') or x.tag == xml.ns('virtual-method'):
                 name = x.attrib['name']
                 try:
-                    self.methods[name] = Method(x, self, xml)
+                    self.methods.append(Method(x, self, xml))
                 except:
                     # TODO: skipped method
                     pass
             elif x.tag == xml.ns('constructor'):
                 name = x.attrib['name']
-                self.methods[name] = Constructor(x, self, xml)
+                self.methods.append(Constructor(x, self, xml))
             else:
                 print("Unhandled", x.tag)
                 pass
@@ -81,7 +81,7 @@ class Class:
                 ns, _ = fqname.split('.')
                 deps.add(f'{ns}.aliases')
 
-        for m in self.methods.values():
+        for m in self.methods:
             if m.return_value and not m.return_value.is_built_in():
                 add_alias(m.return_value.name)
             for _, ptype in m.params:
@@ -92,7 +92,7 @@ class Class:
 
     def _get_extern_types(self):
         deps = set()
-        for m in self.methods.values():
+        for m in self.methods:
             if m.return_value and not m.return_value.is_built_in():
                 fqname = self._get_with_namespace(m.return_value.name)
                 if not self._is_alias(fqname):
@@ -117,6 +117,12 @@ class Class:
         for i in self.interfaces:
             ret.append(f"virtual {_fix_sep(i)}")
         return ret
+
+    def get_plain_methods(self):
+        return filter(lambda m: not m.is_vararg, self.methods)
+
+    def get_vararg_methods(self):
+        return filter(lambda m: m.is_vararg, self.methods)
 
     def output(self, ns_dir):
         self._output_header(ns_dir)
