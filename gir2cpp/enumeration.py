@@ -38,3 +38,11 @@ class Enumeration(TypeDef):
         fname = os.path.join(ns_dir, f"{self.name}.hpp")
         with open(fname, 'w') as f:
             f.write(template.render(enum_=self))
+
+    def cast_from_c(self):
+        # using GObject = ::GObject; return "G_OBJECT"
+        return "reinterpret_cast<::GObject*>"
+
+    def cast_to_c(self, varname):
+        # using GObject = ::GObject; return "G_OBJECT"
+        return f"static_cast<{self.c_type}>({varname})"

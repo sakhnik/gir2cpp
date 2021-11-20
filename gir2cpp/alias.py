@@ -11,3 +11,9 @@ class Alias(TypeDef):
     def output(self, ns_dir):
         # Aliases are output into one file aliases.hpp
         return
+
+    def cast_from_c(self):
+        return ""
+
+    def cast_to_c(self, varname):
+        return varname

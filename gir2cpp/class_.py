@@ -139,6 +139,13 @@ class Class(TypeDef):
         with open(fname, 'w') as f:
             f.write(template.render(cls_=self))
 
+    def cast_from_c(self):
+        # using GObject = ::GObject; return "G_OBJECT"
+        return "reinterpret_cast<::GObject*>"
+
+    def cast_to_c(self, varname):
+        return f"reinterpret_cast<{self.c_type}*>({varname}.g_obj())"
+
 
 class Interface(Class):
     def __init__(self, et: ET, namespace, xml: Xml):

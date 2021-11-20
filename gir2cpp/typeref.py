@@ -54,18 +54,20 @@ class TypeRef:
             return self.c_type.replace(typedef.c_type, self.name)
         return self.name.replace(".", "::")
 
-    def transform_to_cpp(self):
+    def cast_from_c(self):
         if not self.name:
             return ""
-        # using GObject = ::GObject; return "G_OBJECT"
-        return "reinterpret_cast<::GObject*>"
-
-    def transform_to_c(self, pname):
-        if not self.name:
-            return pname
         repository = self.namespace.get_repository()
         typedef = repository.get_typedef(self.name, self.namespace.name)
-        # TODO: a virtual call to typedef
-        if isinstance(typedef, Alias):
-            return pname
-        return f"reinterpret_cast<{self.c_type}>({pname}.g_obj())"
+        if not typedef:
+            return ""
+        return typedef.cast_from_c()
+
+    def cast_to_c(self, varname):
+        if not self.name:
+            return varname
+        repository = self.namespace.get_repository()
+        typedef = repository.get_typedef(self.name, self.namespace.name)
+        if not typedef:
+            return varname
+        return typedef.cast_to_c(varname)
