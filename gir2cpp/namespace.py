@@ -13,8 +13,6 @@ class Namespace:
         self.c_includes = c_includes
         self.repository = repository
         self.typedefs = {}
-        self.enumerations = {}
-        self.classes = {}
 
     def get_repository(self):
         return self.repository
@@ -25,51 +23,30 @@ class Namespace:
             "union"
         ))
 
-        # c_id_pref = nstree.attrib[xml.ns('identifier-prefixes', 'c')]
-        # c_sym_pref = nstree.attrib[xml.ns('symbol-prefixes', 'c')]
+        type_mapping = {
+            xml.ns("class"): Class,
+            xml.ns("interface"): Interface,
+            xml.ns("enumeration"): Enumeration,
+            xml.ns("alias"): Alias,
+            xml.ns("callback"): Alias,
+            # TODO: handle records, bitfields like enumerations
+            xml.ns("record"): Alias,
+            xml.ns("bitfield"): Alias,
+        }
+
         for x in et:
             if x.tag in ignore:
-                pass
-            elif x.tag == xml.ns("boxed", "glib"):
-                pass
-            elif x.tag == xml.ns("alias") \
-                    or x.tag == xml.ns("record") \
-                    or x.tag == xml.ns("callback") \
-                    or x.tag == xml.ns("bitfield"):
-                # TODO: handle records, bitfields like enumerations
-                self.add_alias(x, xml)
-            elif x.tag == xml.ns("class"):
-                self.add_class(x, xml)
-            elif x.tag == xml.ns("interface"):
-                self.add_interface(x, xml)
-            elif x.tag == xml.ns("enumeration"):
-                self.add_enumeration(x, xml)
-            else:
+                continue
+            if x.tag == xml.ns("boxed", "glib"):
+                continue
+            name = x.attrib['name']
+            if Ignore.skip(self.name, name):
+                continue
+            typedef_cl = type_mapping.get(x.tag, None)
+            if not typedef_cl:
                 print('Unhandled', x.tag)
-
-    def add_alias(self, et: ET, xml: Xml):
-        name = et.attrib['name']
-        if Ignore.skip(self.name, name):
-            return
-        self.typedefs[name] = Alias(et, xml)
-
-    def add_class(self, et: ET, xml: Xml):
-        name = et.attrib['name']
-        if Ignore.skip(self.name, name):
-            return
-        self.classes[name] = Class(et, self, xml)
-
-    def add_interface(self, et: ET, xml: Xml):
-        name = et.attrib['name']
-        if Ignore.skip(self.name, name):
-            return
-        self.classes[name] = Interface(et, self, xml)
-
-    def add_enumeration(self, et: ET, xml: Xml):
-        name = et.attrib['name']
-        if Ignore.skip(self.name, name):
-            return
-        self.enumerations[name] = Enumeration(et, self, xml)
+                continue
+            self.typedefs[name] = typedef_cl(x, self, xml)
 
     def get_c_includes(self):
         for i in self.c_includes:
@@ -91,8 +68,7 @@ class Namespace:
         ns_dir = os.path.join(out_dir, self.name)
         os.makedirs(ns_dir, exist_ok=True)
         self._output_aliases(ns_dir)
-        self._output_enumerations(ns_dir)
-        self._output_classes(ns_dir)
+        self._output_typedefs(ns_dir)
 
     def _output_aliases(self, ns_dir):
         template = self.get_repository().get_template('aliases.hpp.in')
@@ -100,10 +76,6 @@ class Namespace:
         with open(fname, 'w') as f:
             f.write(template.render(ns=self))
 
-    def _output_enumerations(self, ns_dir):
-        for e in self.enumerations.values():
-            e.output(ns_dir)
-
-    def _output_classes(self, ns_dir):
-        for c in self.classes.values():
+    def _output_typedefs(self, ns_dir):
+        for c in self.typedefs.values():
             c.output(ns_dir)

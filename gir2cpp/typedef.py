@@ -1,3 +1,8 @@
+import abc
+
 
 class TypeDef:
-    pass
+
+    @abc.abstractmethod
+    def output(self, ns_dir):
+        return
