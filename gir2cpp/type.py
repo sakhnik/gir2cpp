@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 
 class Type:
     def __init__(self, et: ET, namespace, xml: Xml):
+        self.namespace = namespace
         for x in et:
             if x.tag == xml.ns("type"):
                 self.name = x.get('name')
@@ -45,15 +46,21 @@ class Type:
     def cpp_name(self):
         if not self.name:
             return self.c_type
+        alias_c_type = self.namespace.aliases.get(self.name, None)
+        if alias_c_type:
+            return self.c_type.replace(alias_c_type, self.name)
         return self.name.replace(".", "::")
 
     def transform_to_cpp(self):
-        if self.name:
-            # using GObject = ::GObject; return "G_OBJECT"
-            return "reinterpret_cast<::GObject*>"
-        return ""
+        if not self.name:
+            return ""
+        # using GObject = ::GObject; return "G_OBJECT"
+        return "reinterpret_cast<::GObject*>"
 
     def transform_to_c(self, pname):
-        if self.name:
-            return f"reinterpret_cast<{self.c_type}>({pname}.g_obj())"
-        return pname
+        if not self.name:
+            return pname
+        alias_c_type = self.namespace.aliases.get(self.name, None)
+        if alias_c_type:
+            return pname
+        return f"reinterpret_cast<{self.c_type}>({pname}.g_obj())"
