@@ -1,4 +1,5 @@
 from .xml import Xml
+from .alias import Alias
 from .class_ import Class, Interface
 from .enumeration import Enumeration
 from .ignore import Ignore
@@ -11,7 +12,7 @@ class Namespace:
         self.name = name
         self.c_includes = c_includes
         self.repository = repository
-        self.aliases = {}
+        self.typedefs = {}
         self.enumerations = {}
         self.classes = {}
 
@@ -50,8 +51,7 @@ class Namespace:
         name = et.attrib['name']
         if Ignore.skip(self.name, name):
             return
-        c_type = et.attrib.get(xml.ns('type', 'c'))
-        self.aliases[name] = c_type
+        self.typedefs[name] = Alias(et, xml)
 
     def add_class(self, et: ET, xml: Xml):
         name = et.attrib['name']
@@ -78,6 +78,14 @@ class Namespace:
         if self.name != "GObject":
             for i in self.get_repository().get_namespace("GObject").c_includes:
                 yield i
+
+    def get_aliases(self):
+        for td in self.typedefs.values():
+            if isinstance(td, Alias):
+                yield td
+
+    def get_typedef(self, name):
+        return self.typedefs.get(name, None)
 
     def output(self, out_dir):
         ns_dir = os.path.join(out_dir, self.name)

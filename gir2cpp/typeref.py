@@ -1,9 +1,10 @@
 from .xml import Xml
 from .ignore import Ignore
+from .alias import Alias
 import xml.etree.ElementTree as ET
 
 
-class Type:
+class TypeRef:
     def __init__(self, et: ET, namespace, xml: Xml):
         self.namespace = namespace
         for x in et:
@@ -41,14 +42,16 @@ class Type:
     ))
 
     def is_built_in(self):
-        return not self.name or self.name in Type.built_in_types
+        return not self.name or self.name in TypeRef.built_in_types
 
     def cpp_name(self):
         if not self.name:
             return self.c_type
-        alias_c_type = self.namespace.aliases.get(self.name, None)
-        if alias_c_type:
-            return self.c_type.replace(alias_c_type, self.name)
+        repository = self.namespace.get_repository()
+        typedef = repository.get_typedef(self.name, self.namespace.name)
+        # TODO: a virtual call to typedef
+        if isinstance(typedef, Alias):
+            return self.c_type.replace(typedef.c_type, self.name)
         return self.name.replace(".", "::")
 
     def transform_to_cpp(self):
@@ -60,7 +63,9 @@ class Type:
     def transform_to_c(self, pname):
         if not self.name:
             return pname
-        alias_c_type = self.namespace.aliases.get(self.name, None)
-        if alias_c_type:
+        repository = self.namespace.get_repository()
+        typedef = repository.get_typedef(self.name, self.namespace.name)
+        # TODO: a virtual call to typedef
+        if isinstance(typedef, Alias):
             return pname
         return f"reinterpret_cast<{self.c_type}>({pname}.g_obj())"

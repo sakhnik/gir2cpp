@@ -6,8 +6,8 @@
 
 namespace gir {
 namespace {{ ns.name }} {
-{% for k,v in ns.aliases.items() %}
-using {{ k }} = ::{{ v }};
+{% for alias in ns.get_aliases() %}
+using {{ alias.name }} = ::{{ alias.c_type }};
 {%- endfor %}
 
 } //namespace {{ ns.name }};

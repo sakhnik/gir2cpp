@@ -1,10 +1,11 @@
 import os
 from .xml import Xml
+from .typedef import TypeDef
 from .method import Method
 import xml.etree.ElementTree as ET
 
 
-class Enumeration:
+class Enumeration(TypeDef):
     def __init__(self, et: ET, namespace, xml: Xml):
         self.namespace = namespace
         self.name = et.attrib['name']

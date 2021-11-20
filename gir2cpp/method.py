@@ -1,5 +1,5 @@
 from .xml import Xml
-from .type import Type
+from .typeref import TypeRef
 from .keywords import Keywords
 import xml.etree.ElementTree as ET
 
@@ -16,7 +16,7 @@ class Method:
 
         for x in et:
             if x.tag == xml.ns("return-value"):
-                self.return_value = Type(x, class_.namespace, xml)
+                self.return_value = TypeRef(x, class_.namespace, xml)
             elif x.tag == xml.ns("parameters"):
                 idx = 0
                 for y in x:
@@ -25,7 +25,7 @@ class Method:
                         if name == '...':
                             self.is_vararg = True
                             name = ''
-                        type = Type(y, class_.namespace, xml)
+                        type = TypeRef(y, class_.namespace, xml)
                         self.params.append((name, type))
                         self.c_params.append((name, type))
                         idx += 1

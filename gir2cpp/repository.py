@@ -29,6 +29,16 @@ class Repository:
     def get_namespace(self, ns):
         return self.namespaces[ns]
 
+    def get_typedef(self, name, cur_namespace):
+        if '.' in name:
+            ns, name = name.split('.')
+        else:
+            ns = cur_namespace
+        ns = self.namespaces.get(ns, None)
+        if ns:
+            return ns.get_typedef(name)
+        return None
+
     def get_template(self, name):
         return self.env.get_template(name)
 

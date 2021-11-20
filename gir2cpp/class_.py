@@ -1,11 +1,13 @@
 from .xml import Xml
+from .typedef import TypeDef
+from .alias import Alias
 from .method import Method, Constructor
 from .ignore import Ignore
 import xml.etree.ElementTree as ET
 import os.path
 
 
-class Class:
+class Class(TypeDef):
     def __init__(self, et: ET, namespace, xml: Xml):
         self.namespace = namespace
         self.name = et.attrib['name']
@@ -60,13 +62,10 @@ class Class:
         return ident
 
     def _is_alias(self, d):
-        ns, ident = d.split('.')
-        try:
-            namespace = self.get_repository().get_namespace(ns)
-        except KeyError:
-            print(f"Unknown symbol: {d}")
-            raise
-        return ident in namespace.aliases
+        typedef = self.get_repository().get_typedef(d, self.namespace.name)
+        if not typedef:
+            return False
+        return isinstance(typedef, Alias)
 
     def get_header_includes(self):
         deps = set()
