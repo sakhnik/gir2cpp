@@ -77,6 +77,9 @@ class Class(MethodHolder):
     def cast_to_c(self, varname):
         return f"reinterpret_cast<{self.c_type}*>({varname}.g_obj())"
 
+    def cpp_type(self, decl):
+        return f"{self.namespace.name}::{self.name}"
+
 
 class Interface(Class):
     def __init__(self, et: ET, namespace, xml: Xml):

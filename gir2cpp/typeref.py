@@ -44,14 +44,13 @@ class TypeRef:
     def is_built_in(self):
         return not self.name or self.name in TypeRef.built_in_types
 
-    def cpp_name(self):
+    def cpp_type(self):
         if not self.name:
             return self.c_type
         repository = self.namespace.get_repository()
         typedef = repository.get_typedef(self.name, self.namespace.name)
-        # TODO: a virtual call to typedef
-        if isinstance(typedef, Alias):
-            return self.c_type.replace(typedef.c_type, self.name)
+        if typedef:
+            return typedef.cpp_type(self.c_type)
         return self.name.replace(".", "::")
 
     def cast_from_c(self):

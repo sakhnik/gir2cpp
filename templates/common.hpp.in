@@ -1,18 +1,18 @@
 {% macro method_decl(m) -%}
     {{ "static" if m.is_static() else "" }}
-    {{ m.return_value.cpp_name() }}
+    {{ m.return_value.cpp_type() }}
     {{ m.get_name() }}(
         {% for pname, ptype in m.params %}
-        {{- ptype.cpp_name() }} {{ pname }} {{ "," if not loop.last else "" }}
+        {{- ptype.cpp_type() }} {{ pname }} {{ "," if not loop.last else "" }}
         {% endfor -%}
     );
 {%- endmacro %}
 
 {% macro method_def(cl, m) -%}
-{{ m.return_value.cpp_name() }}
+{{ m.return_value.cpp_type() }}
 {{cl.name}}::{{ m.get_name() }}(
     {% for pname, ptype in m.params %}
-    {{- ptype.cpp_name() }} {{ pname }} {{- "," if not loop.last else "" }}
+    {{- ptype.cpp_type() }} {{ pname }} {{- "," if not loop.last else "" }}
     {% endfor -%}
 )
 {%- endmacro %}

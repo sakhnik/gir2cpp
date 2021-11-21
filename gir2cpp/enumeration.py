@@ -48,3 +48,6 @@ class Enumeration(TypeDef):
 
     def cast_to_c(self, varname):
         return varname
+
+    def cpp_type(self, decl):
+        return f"{self.namespace.name}::{self.name}"

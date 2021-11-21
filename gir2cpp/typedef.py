@@ -14,3 +14,7 @@ class TypeDef:
     @abc.abstractmethod
     def cast_to_c(self, varname):
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def cpp_type(self, decl):
+        raise NotImplementedError()

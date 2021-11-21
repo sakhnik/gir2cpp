@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 
 class Alias(TypeDef):
     def __init__(self, et: ET, namespace, xml: Xml):
+        self.namespace = namespace
         self.name = et.attrib['name']
         self.c_type = et.attrib.get(xml.ns('type', 'c'))
 
@@ -17,3 +18,6 @@ class Alias(TypeDef):
 
     def cast_to_c(self, varname):
         return varname
+
+    def cpp_type(self, decl):
+        return decl.replace(self.c_type, f"{self.namespace.name}::{self.name}")
