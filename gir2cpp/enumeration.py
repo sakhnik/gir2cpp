@@ -44,8 +44,8 @@ class Enumeration(TypeDef):
             with open(fname, 'w') as f:
                 f.write(template.render(enum_=self))
 
-    def cast_from_c(self):
-        return ""
+    def cast_from_c(self, varname):
+        return varname
 
     def cast_to_c(self, varname):
         return varname

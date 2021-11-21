@@ -39,7 +39,7 @@ namespace {{ cls_.namespace.name }} {
     {%- endif %}
 
     {% if m.has_return() -%}
-    return {{ m.return_value.cast_from_c() }}(r);
+    return {{ m.return_value.cast_from_c("r") }};
     {%- endif %}
 }
 {% endfor %}

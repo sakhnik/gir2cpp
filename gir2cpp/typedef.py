@@ -8,7 +8,7 @@ class TypeDef:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def cast_from_c(self):
+    def cast_from_c(self, varname):
         raise NotImplementedError()
 
     @abc.abstractmethod

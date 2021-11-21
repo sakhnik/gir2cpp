@@ -70,9 +70,9 @@ class Class(MethodHolder):
             with open(fname, 'w') as f:
                 f.write(template.render(cls_=self))
 
-    def cast_from_c(self):
+    def cast_from_c(self, varname):
         # using GObject = ::GObject; return "G_OBJECT"
-        return "reinterpret_cast<::GObject*>"
+        return f"reinterpret_cast<::GObject*>({varname})"
 
     def cast_to_c(self, varname):
         return f"reinterpret_cast<{self.c_type}*>({varname}.g_obj())"
