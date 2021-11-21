@@ -1,6 +1,5 @@
 from .xml import Xml
 from .ignore import Ignore
-from .alias import Alias
 import xml.etree.ElementTree as ET
 
 
@@ -14,7 +13,7 @@ class TypeRef:
                 if Ignore.skip_check(namespace.name, self.name):
                     self.name = None
                 elif self.name == "none" or self.name == "utf8" \
-                        or self.name == "Value":
+                        or self.name == "Value" or self.name == "filename":
                     self.name = None
                 elif self.is_built_in():
                     self.name = None
