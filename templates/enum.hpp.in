@@ -10,12 +10,22 @@ namespace {{ enum_.namespace.name }} {
 class {{ enum_.name }}
 {
 public:
-    enum
+    enum E
     {
         {%- for k,v in enum_.members %}
         {{ k }} = {{ v }},
         {%- endfor %}
-    };
+    } value;
+
+    {{ enum_.name }}({{ enum_.c_type }} v)
+        : value{static_cast<E>(v)}
+    {
+    }
+
+    operator {{ enum_.c_type }}() const
+    {
+        return static_cast<{{ enum_.c_type }}>(value);
+    }
 
     {% for m in enum_.methods.values() %}
     {{ common.method_decl(m) }}

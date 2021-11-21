@@ -40,9 +40,7 @@ class Enumeration(TypeDef):
             f.write(template.render(enum_=self))
 
     def cast_from_c(self):
-        # using GObject = ::GObject; return "G_OBJECT"
-        return "reinterpret_cast<::GObject*>"
+        return ""
 
     def cast_to_c(self, varname):
-        # using GObject = ::GObject; return "G_OBJECT"
-        return f"static_cast<{self.c_type}>({varname})"
+        return varname
