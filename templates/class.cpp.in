@@ -14,11 +14,7 @@ namespace {{ cls_.namespace.name }} {
     return {{ m.return_value.cast_from_c() }}(
     {{ m.c_ident }}(
     {% for pname, ptype in m.c_params %}
-        {% if loop.index0 == m.get_instance_parameter_idx() -%}
-        reinterpret_cast<{{ m.class_.c_type }}*>(_g_obj)
-        {% else -%}
         {{ ptype.cast_to_c(pname) }}
-        {% endif -%}
         {{- "," if not loop.last else "" }}
     {% endfor -%}
     ));
