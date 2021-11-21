@@ -19,12 +19,14 @@ class Enumeration(TypeDef):
 
         for x in et:
             if x.tag in ignore:
-                pass
-            elif x.tag == xml.ns('member'):
-                mname = x.attrib['name']
+                continue
+            name = x.attrib['name']
+            if x.tag == xml.ns('member'):
                 c_ident = x.attrib[xml.ns("identifier", "c")]
-                self.members.append((mname, c_ident))
+                self.members.append((name, c_ident))
             elif x.tag == xml.ns('function'):
+                # TODO: handle enum methods
+                # print(self.namespace.name, name)
                 self.methods[self.name] = Method(x, self, xml)
             else:
                 print("Unhandled", x.tag)
@@ -34,7 +36,8 @@ class Enumeration(TypeDef):
         return self.namespace.get_repository()
 
     def output(self, ns_dir):
-        for ext in ("hpp", "cpp"):
+        exts = ("hpp", "cpp") if self.methods else ('hpp',)
+        for ext in exts:
             template = self.get_repository().get_template(f"enum.{ext}.in")
             fname = os.path.join(ns_dir, f"{self.name}.{ext}")
             with open(fname, 'w') as f:
