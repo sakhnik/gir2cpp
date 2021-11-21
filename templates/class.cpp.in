@@ -11,13 +11,36 @@ namespace {{ cls_.namespace.name }} {
 {% for m in cls_.get_plain_methods() %}
 {{ common.method_def(cls_, m) }}
 {
-    return {{ m.return_value.cast_from_c() }}(
+    {% if m.throws -%}
+    GError *err{};
+    {%- endif %}
+
+    {% if m.has_return() -%}
+    {{ m.return_value.c_type }} r =
+    {%- endif %}
+
     {{ m.c_ident }}(
     {% for pname, ptype in m.c_params %}
         {{ ptype.cast_to_c(pname) }}
         {{- "," if not loop.last else "" }}
     {% endfor -%}
-    ));
+    {% if m.throws %}
+        , &err
+    {% endif %}
+    );
+
+    {% if m.throws -%}
+    if (err)
+    {
+        Error e{err};
+        g_error_free(err);
+        throw e;
+    }
+    {%- endif %}
+
+    {% if m.has_return() -%}
+    return {{ m.return_value.cast_from_c() }}(r);
+    {%- endif %}
 }
 {% endfor %}
 

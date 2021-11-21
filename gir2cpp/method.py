@@ -12,6 +12,8 @@ class Method:
         self.params = []
         self.c_params = []
         self.is_vararg = False
+        self.return_value = None
+        self.throws = et.attrib.get('throws') == "1"
 
         for x in et:
             if x.tag == xml.ns("return-value"):

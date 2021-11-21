@@ -1,5 +1,8 @@
 #pragma once
 
+#include <exception>
+#include <cstdint>
+#include <string>
 #include <glib-object.h>
 
 namespace gir {
@@ -13,6 +16,20 @@ protected:
 
 public:
     ::GObject* g_obj() const { return _g_obj; }
+};
+
+struct Error : std::exception
+{
+    uint32_t domain{};
+    int code{};
+    std::string message;
+
+    Error(GError *err)
+        : domain{err->domain}
+        , code{err->code}
+        , message{err->message}
+    {
+    }
 };
 
 } //namespace gir;
