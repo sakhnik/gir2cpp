@@ -2,6 +2,7 @@ import os
 from .xml import Xml
 from .typedef import TypeDef
 from .method import Method
+from .keywords import Keywords
 import xml.etree.ElementTree as ET
 
 
@@ -20,7 +21,7 @@ class Enumeration(TypeDef):
         for x in et:
             if x.tag in ignore:
                 continue
-            name = x.attrib['name']
+            name = Keywords.fix_name(x.attrib['name'])
             if x.tag == xml.ns('member'):
                 c_ident = x.attrib[xml.ns("identifier", "c")]
                 self.members.append((name, c_ident))
