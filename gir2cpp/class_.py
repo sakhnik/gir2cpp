@@ -1,6 +1,5 @@
 from .xml import Xml
 from .method_holder import MethodHolder
-from .method import Method, Constructor
 from .ignore import Ignore
 import xml.etree.ElementTree as ET
 import os.path
@@ -8,9 +7,11 @@ import os.path
 
 class Class(MethodHolder):
     def __init__(self, et: ET, namespace, xml: Xml):
-        MethodHolder.__init__(self, namespace)
+        MethodHolder.__init__(self, et, namespace, xml)
+
         self.name = et.attrib['name']
         self.interfaces = set()
+
         try:
             self.c_type = et.attrib[xml.ns("type", "c")]
         except KeyError:
@@ -35,18 +36,10 @@ class Class(MethodHolder):
             name = x.attrib['name']
             if Ignore.skip_check(self.namespace.name, name):
                 continue
+            if x.tag in self.method_tags:
+                continue
             if x.tag == xml.ns('implements'):
                 self.interfaces.add(x.attrib['name'])
-            elif x.tag == xml.ns('method') or x.tag == xml.ns('virtual-method'):
-                name = x.attrib['name']
-                try:
-                    self.methods.append(Method(x, self, xml))
-                except:
-                    # TODO: skipped method
-                    pass
-            elif x.tag == xml.ns('constructor'):
-                name = x.attrib['name']
-                self.methods.append(Constructor(x, self, xml))
             else:
                 print("Unhandled", x.tag)
                 pass

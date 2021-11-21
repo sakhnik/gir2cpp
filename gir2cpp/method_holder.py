@@ -1,11 +1,35 @@
+from .xml import Xml
 from .typedef import TypeDef
 from .alias import Alias
+from .ignore import Ignore
+from .method import Method, Constructor
+import xml.etree.ElementTree as ET
 
 
 class MethodHolder(TypeDef):
-    def __init__(self, namespace):
+    def __init__(self, et: ET, namespace, xml: Xml):
         self.namespace = namespace
         self.methods = []
+        self.method_tags = frozenset((
+            xml.ns("method"), xml.ns("virtual-method"),
+            xml.ns("constructor")
+        ))
+
+        for x in et:
+            name = x.attrib.get('name')
+            if not name:
+                continue
+            if Ignore.skip_check(self.namespace.name, name):
+                continue
+            try:
+                if x.tag == xml.ns('method'):
+                    self.methods.append(Method(x, self, xml))
+                elif x.tag == xml.ns('virtual-method'):
+                    self.methods.append(Method(x, self, xml))
+                elif x.tag == xml.ns('constructor'):
+                    self.methods.append(Constructor(x, self, xml))
+            except KeyError:
+                pass
 
     def get_repository(self):
         return self.namespace.get_repository()
