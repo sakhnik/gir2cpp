@@ -34,10 +34,11 @@ class Enumeration(TypeDef):
         return self.namespace.get_repository()
 
     def output(self, ns_dir):
-        template = self.get_repository().get_template('enum.hpp.in')
-        fname = os.path.join(ns_dir, f"{self.name}.hpp")
-        with open(fname, 'w') as f:
-            f.write(template.render(enum_=self))
+        for ext in ("hpp", "cpp"):
+            template = self.get_repository().get_template(f"enum.{ext}.in")
+            fname = os.path.join(ns_dir, f"{self.name}.{ext}")
+            with open(fname, 'w') as f:
+                f.write(template.render(enum_=self))
 
     def cast_from_c(self):
         return ""

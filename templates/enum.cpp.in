@@ -1,0 +1,9 @@
+{%- import "common.hpp.in" as common %}
+
+#include "{{ enum_.name }}.hpp"
+
+namespace gir {
+namespace {{ enum_.namespace.name }} {
+
+} //namespace {{ enum_.namespace.name }};
+} //namespace gir;
