@@ -27,9 +27,11 @@ public:
         return static_cast<{{ enum_.c_type }}>(value);
     }
 
+    {#
     {% for m in enum_.methods.values() %}
     {{ common.method_decl(m) }}
     {% endfor %}
+    #}
 };
 
 } //namespace {{ enum_.namespace.name }};
