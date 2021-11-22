@@ -1,5 +1,7 @@
 * variadic templates for vararg methods
 * enum methods/functions
+* life time management (intrusive_ptr?)
+* signals/slots
 
 out/Gtk/ConstantExpression.cpp
 out/Gtk/IconView.cpp
