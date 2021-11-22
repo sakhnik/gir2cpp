@@ -10,6 +10,9 @@ class TypeRef:
             if x.tag == xml.ns("type"):
                 self.name = x.get('name')
                 self.c_type = x.attrib.get(xml.ns('type', 'c'))
+                # Resolve clash with the namespace
+                if self.c_type.startswith("GObject"):
+                    self.c_type = self.c_type.replace("GObject", "::GObject")
                 if Ignore.skip_check(namespace.name, self.name):
                     self.name = None
                 elif self.name == "none" or self.name == "utf8" \

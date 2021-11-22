@@ -17,6 +17,9 @@ class Class(MethodHolder):
         except KeyError:
             # Hack for the classes that don't have c:type
             self.c_type = et.attrib[xml.ns("type-name", "glib")]
+        # Resolve clash with the namespace GObject
+        if self.c_type == "GObject":
+            self.c_type = "::GObject"
         self.get_type = et.attrib[xml.ns('get-type', 'glib')]
 
         self.parent = et.attrib.get('parent')

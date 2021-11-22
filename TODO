@@ -1,2 +1,12 @@
 * variadic templates for vararg methods
 * enum methods/functions
+
+out/Gtk/ConstantExpression.cpp
+out/Gtk/IconView.cpp
+out/Gtk/ObjectExpression.cpp
+out/Gtk/PageSetupUnixDialog.cpp
+out/Gtk/PropertyExpression.cpp
+out/Gtk/ScrolledWindow.cpp
+out/Gtk/TreeSelection.cpp
+out/Gtk/TreeSortable.cpp
+out/Gtk/TreeView.cpp
