@@ -3,12 +3,8 @@
 * life time management (intrusive_ptr?)
 * signals/slots
 
-out/Gtk/ConstantExpression.cpp
 out/Gtk/IconView.cpp
-out/Gtk/ObjectExpression.cpp
 out/Gtk/PageSetupUnixDialog.cpp
-out/Gtk/PropertyExpression.cpp
 out/Gtk/ScrolledWindow.cpp
-out/Gtk/TreeSelection.cpp
 out/Gtk/TreeSortable.cpp
 out/Gtk/TreeView.cpp

@@ -77,8 +77,8 @@ class Class(MethodHolder):
         # using GObject = ::GObject; return "G_OBJECT"
         return f"reinterpret_cast<::GObject*>({varname})"
 
-    def cast_to_c(self, varname):
-        return f"reinterpret_cast<{self.c_type}*>({varname}.g_obj())"
+    def cast_to_c(self, varname, refctype):
+        return f"reinterpret_cast<{refctype}>({varname}.g_obj())"
 
     def cpp_type(self, decl):
         return f"{self.namespace.name}::{self.name}"

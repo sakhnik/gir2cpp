@@ -47,7 +47,7 @@ class Enumeration(TypeDef):
     def cast_from_c(self, varname):
         return varname
 
-    def cast_to_c(self, varname):
+    def cast_to_c(self, varname, refctype):
         return varname
 
     def cpp_type(self, decl):

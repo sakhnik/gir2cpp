@@ -12,7 +12,7 @@ class TypeDef:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def cast_to_c(self, varname):
+    def cast_to_c(self, varname, refctype):
         raise NotImplementedError()
 
     @abc.abstractmethod

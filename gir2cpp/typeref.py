@@ -71,4 +71,4 @@ class TypeRef:
         typedef = repository.get_typedef(self.name, self.namespace.name)
         if not typedef:
             return varname
-        return typedef.cast_to_c(varname)
+        return typedef.cast_to_c(varname, self.c_type)
