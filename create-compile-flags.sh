@@ -5,5 +5,6 @@ cat >|compile_flags.txt <<END
 -I.
 -Iout
 -Wno-deprecated
+-Wno-deprecated-declarations
 $(pkg-config --cflags gtk4 | sed 's/ -/\n-/g')
 END

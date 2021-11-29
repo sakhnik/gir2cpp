@@ -30,6 +30,8 @@ class MethodHolder(TypeDef):
                     self.methods.append(Constructor(x, self, xml))
             except KeyError:
                 pass
+            except NotImplementedError:
+                pass
 
     def get_repository(self):
         return self.namespace.get_repository()
