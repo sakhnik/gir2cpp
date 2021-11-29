@@ -2,16 +2,17 @@ from .xml import Xml
 from .alias import Alias
 from .class_ import Class, Interface
 from .enumeration import Enumeration
-from .ignore import Ignore
+from .config import Config
 import xml.etree.ElementTree as ET
 import os
 
 
 class Namespace:
-    def __init__(self, name, c_includes, repository):
+    def __init__(self, name, c_includes, repository, config: Config):
         self.name = name
         self.c_includes = c_includes
         self.repository = repository
+        self.config = config
         self.typedefs = {}
 
     def get_repository(self):
@@ -40,13 +41,13 @@ class Namespace:
             if x.tag == xml.ns("boxed", "glib"):
                 continue
             name = x.attrib['name']
-            if Ignore.skip(self.name, name):
+            if self.config.skip(self.name, name):
                 continue
             typedef_cl = type_mapping.get(x.tag, None)
             if not typedef_cl:
                 print('Unhandled', x.tag)
                 continue
-            self.typedefs[name] = typedef_cl(x, self, xml)
+            self.typedefs[name] = typedef_cl(x, self, xml, self.config)
 
     def get_c_includes(self):
         for i in self.c_includes:

@@ -1,11 +1,12 @@
 from .xml import Xml
 from .typeref import TypeRef
 from .keywords import Keywords
+from .config import Config
 import xml.etree.ElementTree as ET
 
 
 class Method:
-    def __init__(self, et: ET, class_, xml: Xml):
+    def __init__(self, et: ET, class_, xml: Xml, config: Config):
         self.class_ = class_
         self.name = et.attrib['name']
         self.c_ident = et.attrib[xml.ns('identifier', 'c')]
@@ -17,7 +18,7 @@ class Method:
 
         for x in et:
             if x.tag == xml.ns("return-value"):
-                self.return_value = TypeRef(x, class_.namespace, xml)
+                self.return_value = TypeRef(x, class_.namespace, xml, config)
             elif x.tag == xml.ns("parameters"):
                 idx = 0
                 for y in x:
@@ -28,12 +29,12 @@ class Method:
                         if name == '...':
                             self.is_vararg = True
                             name = ''
-                        type = TypeRef(y, class_.namespace, xml)
+                        type = TypeRef(y, class_.namespace, xml, config)
                         self.params.append((name, type))
                         self.c_params.append((name, type))
                         idx += 1
                     elif y.tag == xml.ns("instance-parameter"):
-                        type = TypeRef(y, class_.namespace, xml)
+                        type = TypeRef(y, class_.namespace, xml, config)
                         self.c_params.append(("(*this)", type))
                     else:
                         print("Unsupported", y.tag)
@@ -58,8 +59,8 @@ class Method:
 
 
 class Constructor(Method):
-    def __init__(self, et: ET, class_, xml: Xml):
-        Method.__init__(self, et, class_, xml)
+    def __init__(self, et: ET, class_, xml: Xml, config: Config):
+        Method.__init__(self, et, class_, xml, config)
 
     def is_static(self):
         return True

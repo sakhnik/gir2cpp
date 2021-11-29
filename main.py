@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
 from gir2cpp.repository import Repository
+from gir2cpp.config import Config
 
 
-gir_dir = '/usr/share/gir-1.0/'
-out_dir = 'out'
+config = Config()
 
-
-repository = Repository(gir_dir)
+repository = Repository(config)
 repository.process('Gtk', '4.0')
-repository.output(out_dir)
+repository.output()

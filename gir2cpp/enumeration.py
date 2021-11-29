@@ -3,11 +3,12 @@ from .xml import Xml
 from .typedef import TypeDef
 from .method import Method
 from .keywords import Keywords
+from .config import Config
 import xml.etree.ElementTree as ET
 
 
 class Enumeration(TypeDef):
-    def __init__(self, et: ET, namespace, xml: Xml):
+    def __init__(self, et: ET, namespace, xml: Xml, config: Config):
         self.namespace = namespace
         self.name = et.attrib['name']
         self.c_type = et.attrib[xml.ns("type", "c")]
@@ -28,7 +29,7 @@ class Enumeration(TypeDef):
             elif x.tag == xml.ns('function'):
                 # TODO: handle enum methods
                 # print(self.namespace.name, name)
-                self.methods[self.name] = Method(x, self, xml)
+                self.methods[self.name] = Method(x, self, xml, config)
             else:
                 print("Unhandled", x.tag)
                 pass

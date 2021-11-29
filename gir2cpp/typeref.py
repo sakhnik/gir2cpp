@@ -1,10 +1,10 @@
 from .xml import Xml
-from .ignore import Ignore
+from .config import Config
 import xml.etree.ElementTree as ET
 
 
 class TypeRef:
-    def __init__(self, et: ET, namespace, xml: Xml):
+    def __init__(self, et: ET, namespace, xml: Xml, config: Config):
         self.namespace = namespace
         for x in et:
             if x.tag == xml.ns("type"):
@@ -13,7 +13,7 @@ class TypeRef:
                 # Resolve clash with the namespace
                 if self.c_type.startswith("GObject"):
                     self.c_type = self.c_type.replace("GObject", "::GObject")
-                if Ignore.skip_check(namespace.name, self.name):
+                if config.skip_check(namespace.name, self.name):
                     self.name = None
                 elif self.name == "none" or self.name == "utf8" \
                         or self.name == "Value" or self.name == "filename":

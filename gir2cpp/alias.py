@@ -1,10 +1,11 @@
 from .typedef import TypeDef
 from .xml import Xml
+from .config import Config
 import xml.etree.ElementTree as ET
 
 
 class Alias(TypeDef):
-    def __init__(self, et: ET, namespace, xml: Xml):
+    def __init__(self, et: ET, namespace, xml: Xml, config: Config):
         self.namespace = namespace
         self.name = et.attrib['name']
         self.c_type = et.attrib.get(xml.ns('type', 'c'))

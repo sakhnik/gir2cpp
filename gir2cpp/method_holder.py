@@ -1,13 +1,13 @@
 from .xml import Xml
 from .typedef import TypeDef
 from .alias import Alias
-from .ignore import Ignore
+from .config import Config
 from .method import Method, Constructor
 import xml.etree.ElementTree as ET
 
 
 class MethodHolder(TypeDef):
-    def __init__(self, et: ET, namespace, xml: Xml):
+    def __init__(self, et: ET, namespace, xml: Xml, config: Config):
         self.namespace = namespace
         self.methods = []
         self.method_tags = frozenset((
@@ -19,15 +19,15 @@ class MethodHolder(TypeDef):
             name = x.attrib.get('name')
             if not name:
                 continue
-            if Ignore.skip_check(self.namespace.name, name):
+            if config.skip_check(self.namespace.name, name):
                 continue
             try:
                 if x.tag == xml.ns('method'):
-                    self.methods.append(Method(x, self, xml))
+                    self.methods.append(Method(x, self, xml, config))
                 elif x.tag == xml.ns('virtual-method'):
-                    self.methods.append(Method(x, self, xml))
+                    self.methods.append(Method(x, self, xml, config))
                 elif x.tag == xml.ns('constructor'):
-                    self.methods.append(Constructor(x, self, xml))
+                    self.methods.append(Constructor(x, self, xml, config))
             except KeyError:
                 pass
             except NotImplementedError:

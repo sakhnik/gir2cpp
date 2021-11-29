@@ -1,13 +1,13 @@
 from .xml import Xml
 from .method_holder import MethodHolder
-from .ignore import Ignore
+from .config import Config
 import xml.etree.ElementTree as ET
 import os.path
 
 
 class Class(MethodHolder):
-    def __init__(self, et: ET, namespace, xml: Xml):
-        MethodHolder.__init__(self, et, namespace, xml)
+    def __init__(self, et: ET, namespace, xml: Xml, config: Config):
+        MethodHolder.__init__(self, et, namespace, xml, config)
 
         self.name = et.attrib['name']
         self.interfaces = set()
@@ -23,7 +23,7 @@ class Class(MethodHolder):
         self.get_type = et.attrib[xml.ns('get-type', 'glib')]
 
         self.parent = et.attrib.get('parent')
-        if Ignore.skip_check(self.namespace.name, self.parent):
+        if config.skip_check(self.namespace.name, self.parent):
             self.parent = None
 
         ignore = frozenset(xml.ns(i) for i in (
@@ -37,7 +37,7 @@ class Class(MethodHolder):
             elif x.tag == xml.ns('signal', 'glib'):
                 continue
             name = x.attrib['name']
-            if Ignore.skip_check(self.namespace.name, name):
+            if config.skip_check(self.namespace.name, name):
                 continue
             if x.tag in self.method_tags:
                 continue
@@ -85,5 +85,5 @@ class Class(MethodHolder):
 
 
 class Interface(Class):
-    def __init__(self, et: ET, namespace, xml: Xml):
-        Class.__init__(self, et, namespace, xml)
+    def __init__(self, et: ET, namespace, xml: Xml, config: Config):
+        Class.__init__(self, et, namespace, xml, config)
