@@ -10,17 +10,9 @@ class Ignore:
     ignore = re.compile(r"""^(
             Gtk::Print.*
             |
-            Gio::SettingsBackend.*
-            |
-            GLib::StatBuf
-            |
-            Gsk::.*?Renderer.*
-            |
-            GLib::Unix.*
-            |
-            HarfBuzz::.*
-            |
             GdkPixbuf::.*
+            |
+            Gtk::PageSetupUnixDialog
             )$""", re.VERBOSE)
 
     @staticmethod

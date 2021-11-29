@@ -3,5 +3,3 @@
 * life time management (intrusive_ptr?)
 * signals/slots
 * out parameters (methods are skipped with NotImplementedError)
-
-out/Gtk/PageSetupUnixDialog.cpp
