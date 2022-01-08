@@ -7,7 +7,7 @@ class Config:
                 GObject::.*
                 |
                 Gtk::.*
-                )""", re.VERBOSE)
+                )$""", re.VERBOSE)
         self.ignore = re.compile(r"""^(
                 Gtk::Print.*
                 |
