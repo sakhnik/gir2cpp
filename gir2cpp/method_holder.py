@@ -10,6 +10,7 @@ class MethodHolder(TypeDef):
     def __init__(self, et: ET, namespace, xml: Xml, config: Config):
         self.namespace = namespace
         self.methods = []
+        self.name = et.attrib.get('name')
         self.method_tags = frozenset((
             xml.ns("method"), xml.ns("virtual-method"),
             xml.ns("constructor")
@@ -19,7 +20,7 @@ class MethodHolder(TypeDef):
             name = x.attrib.get('name')
             if not name:
                 continue
-            if config.skip_check(self.namespace.name, name):
+            if config.skip(f"{self.namespace.name}::{self.name}", name):
                 continue
             try:
                 if x.tag == xml.ns('method'):
