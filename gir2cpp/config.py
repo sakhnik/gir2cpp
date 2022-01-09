@@ -1,4 +1,5 @@
 import re
+import xml.etree.ElementTree as ET
 
 
 class Config:
@@ -17,6 +18,7 @@ class Config:
                 )$""", re.VERBOSE)
         self.gir_dir = '/usr/share/gir-1.0/'
         self.out_dir = 'out'
+        self.allow_deprecated = False
 
     def skip(self, ns, symbol=''):
         fqident = f"{ns}::{symbol}"
@@ -37,3 +39,8 @@ class Config:
         if '.' in symbol:
             return self.skip_dotted(symbol)
         return self.skip(ns, symbol)
+
+    def skip_deprecated(self, et: ET):
+        if self.allow_deprecated:
+            return False
+        return "1" == et.attrib.get('deprecated', 0)

@@ -40,6 +40,8 @@ class Namespace:
                 continue
             if x.tag == xml.ns("boxed", "glib"):
                 continue
+            if self.config.skip_deprecated(x):
+                continue
             name = x.attrib['name']
             if self.config.skip(self.name, name):
                 continue

@@ -17,6 +17,8 @@ class MethodHolder(TypeDef):
         ))
 
         for x in et:
+            if config.skip_deprecated(x):
+                continue
             name = x.attrib.get('name')
             if not name:
                 continue

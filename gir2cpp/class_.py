@@ -36,6 +36,8 @@ class Class(MethodHolder):
                 continue
             elif x.tag == xml.ns('signal', 'glib'):
                 continue
+            if config.skip_deprecated(x):
+                continue
             name = x.attrib['name']
             if config.skip_check(self.namespace.name, name):
                 continue
