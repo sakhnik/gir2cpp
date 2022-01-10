@@ -28,6 +28,32 @@ public:
         _g_obj = o;
     }
 
+    //{{ cls_.name }}({{ cls_.name }} &&o)
+    //    : gir::Base{o}
+    //{
+    //    _g_obj = o._g_obj;
+    //    o._g_obj = nullptr;
+    //}
+
+    //{{ cls_.name }}(const {{ cls_.name }} &o)
+    //    : gir::Base{o}
+    //{
+    //    _g_obj = o._g_obj;
+    //}
+
+    //{{ cls_.name }}& operator=({{ cls_.name }} &&o)
+    //{
+    //    _g_obj = o._g_obj;
+    //    o._g_obj = nullptr;
+    //    return *this;
+    //}
+
+    //{{ cls_.name }}& operator=(const {{ cls_.name }} &o)
+    //{
+    //    _g_obj = o._g_obj;
+    //    return *this;
+    //}
+
     {% for m in cls_.get_plain_methods() %}
     {{ common.method_decl(m) }}
     {% endfor %}
