@@ -34,14 +34,12 @@ class Class(MethodHolder):
         for x in et:
             if x.tag in ignore:
                 continue
-            elif x.tag == xml.ns('signal', 'glib'):
-                continue
             if config.skip_deprecated(x):
                 continue
             name = x.attrib['name']
             if config.skip_check(self.namespace.name, name):
                 continue
-            if x.tag in self.method_tags:
+            if self.handled_in_method_holder(x):
                 continue
             if x.tag == xml.ns('implements'):
                 self.interfaces.add(x.attrib['name'])

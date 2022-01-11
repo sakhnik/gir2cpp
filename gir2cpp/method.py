@@ -9,7 +9,7 @@ class Method:
     def __init__(self, et: ET, class_, xml: Xml, config: Config):
         self.class_ = class_
         self.name = et.attrib['name']
-        self.c_ident = et.attrib[xml.ns('identifier', 'c')]
+        self.c_ident = et.attrib.get(xml.ns('identifier', 'c'))
         self.params = []
         self.c_params = []
         self.is_vararg = False
@@ -59,6 +59,14 @@ class Method:
 
 
 class Constructor(Method):
+    def __init__(self, et: ET, class_, xml: Xml, config: Config):
+        Method.__init__(self, et, class_, xml, config)
+
+    def is_static(self):
+        return True
+
+
+class Signal(Method):
     def __init__(self, et: ET, class_, xml: Xml, config: Config):
         Method.__init__(self, et, class_, xml, config)
 

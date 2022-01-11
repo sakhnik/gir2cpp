@@ -2,18 +2,21 @@ from .xml import Xml
 from .typedef import TypeDef
 from .alias import Alias
 from .config import Config
-from .method import Method, Constructor
+from .method import Method, Constructor, Signal
 import xml.etree.ElementTree as ET
+from itertools import chain
 
 
 class MethodHolder(TypeDef):
     def __init__(self, et: ET, namespace, xml: Xml, config: Config):
         self.namespace = namespace
         self.methods = []
+        self.signals = []
         self.name = et.attrib.get('name')
+        self.method_names = set()  # For deduplication
         self.method_tags = frozenset((
             xml.ns("method"), xml.ns("virtual-method"),
-            xml.ns("constructor")
+            xml.ns("constructor"), xml.ns('signal', 'glib')
         ))
 
         for x in et:
@@ -26,22 +29,36 @@ class MethodHolder(TypeDef):
                 continue
             try:
                 if x.tag == xml.ns('method'):
-                    self.methods.append(Method(x, self, xml, config))
+                    self.append_method(Method(x, self, xml, config))
                 elif x.tag == xml.ns('virtual-method'):
-                    self.methods.append(Method(x, self, xml, config))
+                    self.append_method(Method(x, self, xml, config))
                 elif x.tag == xml.ns('constructor'):
-                    self.methods.append(Constructor(x, self, xml, config))
-            except KeyError:
-                pass
+                    self.append_method(Constructor(x, self, xml, config))
+                elif x.tag == xml.ns('signal', 'glib'):
+                    self.signals.append(Signal(x, self, xml, config))
+            # except KeyError:
+            #     pass
             except NotImplementedError:
                 pass
+
+    def append_method(self, method):
+        # TODO: handle virtual methods without c_ident
+        if not method.c_ident:
+            return
+        if method.name in self.method_names:
+            return
+        self.method_names.add(method.name)
+        self.methods.append(method)
+
+    def handled_in_method_holder(self, x: ET):
+        return x.tag in self.method_tags
 
     def get_repository(self):
         return self.namespace.get_repository()
 
     def _get_extern_types(self):
         deps = set()
-        for m in self.methods:
+        for m in chain(self.methods, self.signals):
             if m.return_value and not m.return_value.is_built_in():
                 fqname = self._get_with_namespace(m.return_value.name)
                 if not self._is_alias(fqname):
@@ -54,7 +71,8 @@ class MethodHolder(TypeDef):
         return deps
 
     def get_forward_decls(self):
-        deps = self._get_extern_types()
+        cur_class = self._get_with_namespace(self.name)
+        deps = self._get_extern_types().difference({cur_class})
         return [d.split('.') for d in deps]
 
     def get_plain_methods(self):
@@ -83,7 +101,7 @@ class MethodHolder(TypeDef):
                 ns, _ = fqname.split('.')
                 deps.add(f'{ns}.aliases')
 
-        for m in self.methods:
+        for m in chain(self.methods, self.signals):
             if m.return_value and not m.return_value.is_built_in():
                 add_alias(m.return_value.name)
             for _, ptype in m.params:

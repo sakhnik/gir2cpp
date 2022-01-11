@@ -11,7 +11,7 @@ class TypeRef:
                 self.name = x.get('name')
                 self.c_type = x.attrib.get(xml.ns('type', 'c'))
                 # Resolve clash with the namespace
-                if self.c_type.startswith("GObject"):
+                if self.c_type and self.c_type.startswith("GObject"):
                     self.c_type = self.c_type.replace("GObject", "::GObject")
                 if config.skip_check(namespace.name, self.name):
                     self.name = None
