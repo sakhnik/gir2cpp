@@ -3,6 +3,7 @@
 #include <exception>
 #include <cstdint>
 #include <string>
+#include <functional>
 #include <glib-object.h>
 
 namespace gir {

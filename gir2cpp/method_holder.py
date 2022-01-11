@@ -81,6 +81,17 @@ class MethodHolder(TypeDef):
     def get_vararg_methods(self):
         return filter(lambda m: m.is_vararg, self.methods)
 
+    def get_signals(self):
+        # Skip through the signals that don't have all the C++ types defined
+        def _is_defined(m: Method):
+            if not m.return_value.cpp_type():
+                return False
+            for pn, pt in m.params:
+                if not pt.cpp_type():
+                    return False
+            return True
+        return filter(lambda m: _is_defined(m), self.signals)
+
     def _get_with_namespace(self, ident):
         if '.' not in ident:
             return f"{self.namespace.name}.{ident}"

@@ -51,7 +51,7 @@ class Method:
         return False
 
     def get_name(self):
-        return Keywords.fix_name(self.name)
+        return Keywords.fix_name(self.name).replace('-', '_')
 
     def has_return(self):
         return self.return_value is not None \

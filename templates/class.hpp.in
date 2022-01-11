@@ -57,6 +57,10 @@ public:
     {% for m in cls_.get_plain_methods() %}
     {{ common.method_decl(m) }}
     {% endfor %}
+
+    {% for m in cls_.get_signals() %}
+    {{ common.signal_decl(m) }}
+    {% endfor %}
 };
 
 } //namespace {{ cls_.namespace.name }};

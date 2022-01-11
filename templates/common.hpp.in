@@ -16,3 +16,14 @@
     {% endfor -%}
 )
 {%- endmacro %}
+
+{% macro signal_decl(m) -%}
+    using {{ m.get_name() }}_T = std::function<
+        {{ m.return_value.cpp_type() }}(
+        {% for pname, ptype in m.params %}
+        {{- ptype.cpp_type() }} {{ pname }} {{ "," if not loop.last else "" }}
+        {% endfor -%}
+        )>;
+
+    guint on_{{ m.get_name() }}({{ m.get_name() }}_T);
+{%- endmacro %}
