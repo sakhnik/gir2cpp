@@ -7,6 +7,9 @@
 {% for inc in cls_.get_header_includes() -%}
 #include "{{ inc }}.hpp"
 {% endfor %}
+{%- if cls_.get_signals() -%}
+#include <functional>
+{% endif %}
 
 namespace gir {
 
@@ -59,7 +62,7 @@ public:
     {% endfor %}
 
     {% for m in cls_.get_signals() %}
-    {{ common.signal_decl(m) }}
+    {{ common.signal_decl(cls_, m) }}
     {% endfor %}
 };
 

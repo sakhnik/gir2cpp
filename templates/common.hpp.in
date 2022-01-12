@@ -17,11 +17,12 @@
 )
 {%- endmacro %}
 
-{% macro signal_decl(m) -%}
+{% macro signal_decl(cl, m) -%}
     using {{ m.get_name() }}_T = std::function<
         {{ m.return_value.cpp_type() }}(
-        {% for pname, ptype in m.params %}
-        {{- ptype.cpp_type() }} {{ pname }} {{ "," if not loop.last else "" }}
+        {{ cl.c_type }} *
+        {%- for pname, ptype in m.params %}
+        , {{ ptype.cpp_type() }} {{ pname }}
         {% endfor -%}
         )>;
 
