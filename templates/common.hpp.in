@@ -17,14 +17,20 @@
 )
 {%- endmacro %}
 
-{% macro signal_decl(cl, m) -%}
-    using {{ m.get_name() }}_T = std::function<
-        {{ m.return_value.cpp_type() }}(
-        {{ cl.c_type }} *
+{% macro signal_params(cl, m) -%}
+        {{ cl.c_type }} *inst
         {%- for pname, ptype in m.params %}
-        , {{ ptype.cpp_type() }} {{ pname }}
+        , {{ ptype.cpp_type() }} {{ pname -}}
         {% endfor -%}
-        )>;
+{%- endmacro %}
 
-    guint on_{{ m.get_name() }}({{ m.get_name() }}_T);
+{% macro signal_signature(cl, m) -%}
+    std::function<
+        {{ m.return_value.cpp_type() }}(
+        {{ signal_params(cl, m) }}
+        )>
+{%- endmacro %}
+
+{% macro signal_decl(cl, m) -%}
+    guint on_{{ m.get_name() }}({{ signal_signature(cl, m) }});
 {%- endmacro %}
