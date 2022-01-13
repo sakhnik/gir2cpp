@@ -18,7 +18,7 @@
 {%- endmacro %}
 
 {% macro signal_params(cl, m) -%}
-        {{ cl.c_type }} *inst
+        {{ cl.name }} inst
         {%- for pname, ptype in m.params %}
         , {{ ptype.cpp_type() }} {{ pname -}}
         {% endfor -%}

@@ -67,7 +67,7 @@ guint
             , gpointer data) {
         FuncT *func = reinterpret_cast<FuncT *>(data);
         return (*func)(
-                    inst
+                    {{ cls_.cast_from_c("inst") }}
                     {%- for pname, ptype in m.params %}
                     , {{ ptype.cast_from_c(pname) -}}
                     {% endfor -%}
