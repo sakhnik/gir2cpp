@@ -18,3 +18,7 @@ class TypeDef:
     @abc.abstractmethod
     def cpp_type(self, decl):
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def c_type_decl(self):
+        raise NotImplementedError()

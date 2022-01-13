@@ -83,6 +83,9 @@ class Class(MethodHolder):
     def cpp_type(self, decl):
         return f"{self.namespace.name}::{self.name}"
 
+    def c_type_decl(self):
+        return f"{self.c_type} *"
+
 
 class Interface(Class):
     def __init__(self, et: ET, namespace, xml: Xml, config: Config):

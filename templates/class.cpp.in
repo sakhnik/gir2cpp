@@ -53,17 +53,23 @@ guint
 
     using CbT =
         {{ m.return_value.cpp_type() }}(*)(
-            {{ common.signal_params(cls_, m) }}
+            {{ cls_.c_type }} *inst
+            {%- for pname, ptype in m.params %}
+            , {{ ptype.c_type_decl() }} {{ pname -}}
+            {% endfor -%}
             , gpointer data
         );
     CbT cb = [](
-            {{ common.signal_params(cls_, m) }}
+            {{ cls_.c_type }} *inst
+            {%- for pname, ptype in m.params %}
+            , {{ ptype.c_type_decl() }} {{ pname -}}
+            {% endfor -%}
             , gpointer data) {
         FuncT *func = reinterpret_cast<FuncT *>(data);
         return (*func)(
                     inst
-                    {%- for pname, _ in m.params %}
-                    , {{ pname -}}
+                    {%- for pname, ptype in m.params %}
+                    , {{ ptype.cast_from_c(pname) -}}
                     {% endfor -%}
                 );
     };

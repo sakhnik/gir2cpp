@@ -53,3 +53,6 @@ class Enumeration(TypeDef):
 
     def cpp_type(self, decl):
         return f"{self.namespace.name}::{self.name}"
+
+    def c_type_decl(self):
+        return self.c_type

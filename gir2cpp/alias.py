@@ -21,4 +21,11 @@ class Alias(TypeDef):
         return varname
 
     def cpp_type(self, decl):
+        if not decl:
+            return f"{self.namespace.name}::{self.name} *"
         return decl.replace(self.c_type, f"{self.namespace.name}::{self.name}")
+
+    def c_type_decl(self):
+        if self.c_type:
+            return f"{self.c_type} *"
+        return f"{self.namespace.name}::{self.name} *"

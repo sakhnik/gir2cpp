@@ -55,6 +55,15 @@ class TypeRef:
             return typedef.cpp_type(self.c_type)
         return self.name.replace(".", "::")
 
+    def c_type_decl(self):
+        if not self.name:
+            return self.c_type
+        repository = self.namespace.get_repository()
+        typedef = repository.get_typedef(self.name, self.namespace.name)
+        if typedef:
+            return typedef.c_type_decl()
+        return self.name
+
     def cast_from_c(self, varname):
         if not self.name:
             return varname
