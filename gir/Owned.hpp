@@ -54,6 +54,8 @@ struct Owned : T
             o._g_obj = nullptr;
         return *this;
     }
+
+    T& get() { return *this; }
 };
 
 template <typename T>

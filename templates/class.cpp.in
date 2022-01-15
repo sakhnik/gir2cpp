@@ -44,44 +44,5 @@ namespace {{ cls_.namespace.name }} {
 }
 {% endfor %}
 
-{% for m in cls_.get_signals() %}
-guint
-{{cls_.name}}::on_{{ m.get_name() }}({{ common.signal_signature(cls_, m) }} func)
-{
-    using FuncT = decltype(func);
-    FuncT *func_ = new FuncT(func);
-
-    using CbT =
-        {{ m.return_value.cpp_type() }}(*)(
-            {{ cls_.c_type }} *inst
-            {%- for pname, ptype in m.params %}
-            , {{ ptype.c_type_decl() }} {{ pname -}}
-            {% endfor -%}
-            , gpointer data
-        );
-    CbT cb = [](
-            {{ cls_.c_type }} *inst
-            {%- for pname, ptype in m.params %}
-            , {{ ptype.c_type_decl() }} {{ pname -}}
-            {% endfor -%}
-            , gpointer data) {
-        FuncT *func = reinterpret_cast<FuncT *>(data);
-        return (*func)(
-                    {{ cls_.cast_from_c("inst") }}
-                    {%- for pname, ptype in m.params %}
-                    , {{ ptype.cast_from_c(pname) -}}
-                    {% endfor -%}
-                );
-    };
-
-    auto notify = [](gpointer data, GClosure *) {
-        FuncT *func = reinterpret_cast<FuncT *>(data);
-        delete func;
-    };
-
-    return g_signal_connect_data(_g_obj, "{{ m.name }}", G_CALLBACK(cb), func_, notify, G_CONNECT_AFTER);
-}
-{% endfor %}
-
 } //namespace {{ cls_.namespace.name }};
 } //namespace gir;

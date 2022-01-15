@@ -30,7 +30,3 @@
         {{ signal_params(cl, m) }}
         )>
 {%- endmacro %}
-
-{% macro signal_decl(cl, m) -%}
-    guint on_{{ m.get_name() }}({{ signal_signature(cl, m) }});
-{%- endmacro %}
