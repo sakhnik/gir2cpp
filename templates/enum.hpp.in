@@ -17,6 +17,11 @@ public:
         {%- endfor %}
     } value;
 
+    {{ enum_.name }}(E v)
+        : value{v}
+    {
+    }
+
     {{ enum_.name }}({{ enum_.c_type }} v)
         : value{static_cast<E>(v)}
     {
