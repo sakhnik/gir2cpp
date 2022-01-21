@@ -10,6 +10,8 @@ class Class(MethodHolder):
         MethodHolder.__init__(self, et, namespace, xml, config)
 
         self.name = et.attrib['name']
+        # Interface names in C++ format like "Gtk::Editable"
+        # TODO: Unify namespace-aware name management
         self.interfaces = set()
 
         try:
@@ -42,7 +44,8 @@ class Class(MethodHolder):
             if self.handled_in_method_holder(x):
                 continue
             if x.tag == xml.ns('implements'):
-                self.interfaces.add(x.attrib['name'])
+                cpp_id = self.namespace.get_cpp_identifier(x.attrib['name'])
+                self.interfaces.add(cpp_id)
             else:
                 print("Unhandled", x.tag)
                 pass
@@ -52,7 +55,10 @@ class Class(MethodHolder):
         if self.parent:
             deps.add(self._get_with_namespace(self.parent))
         for i in self.interfaces:
-            deps.add(self._get_with_namespace(i))
+            # No need to inherit from an interface another time
+            # if it's already done in one of parent classes.
+            if not self.parent_implements_interface(i):
+                deps.add(i.replace('::', '.'))
         methods_includes = self.get_header_includes_for_methods()
         return set(d.replace('.', '/') for d in deps).union(methods_includes)
 
@@ -63,8 +69,23 @@ class Class(MethodHolder):
         if self.parent:
             ret.append(_fix_sep(self.parent))
         for i in self.interfaces:
-            ret.append(f"virtual {_fix_sep(i)}")
+            # No need to inherit from an interface another time
+            # if it's already done in one of parent classes.
+            if not self.parent_implements_interface(i):
+                ret.append(i)
         return ret
+
+    def parent_implements_interface(self, cpp_type):
+        """Check whether the interface is already implemented
+           in one of parent classes."""
+        if not self.parent:
+            return False
+        parent = self.get_repository().get_typedef(self.parent,
+                                                   self.namespace.name)
+        for i in parent.interfaces:
+            if i == cpp_type:
+                return True
+        return parent.parent_implements_interface(cpp_type)
 
     def output(self, ns_dir):
         for ext in ("hpp", "cpp"):

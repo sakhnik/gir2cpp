@@ -51,6 +51,11 @@ class Namespace:
                 continue
             self.typedefs[name] = typedef_cl(x, self, xml, self.config)
 
+    def get_cpp_identifier(self, name: str):
+        if '.' in name:
+            return name.replace('.', '::')
+        return f"{self.name}::{name}"
+
     def get_c_includes(self):
         for i in self.c_includes:
             yield i
