@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 class TypeRef:
     def __init__(self, et: ET, namespace, xml: Xml, config: Config):
         self.namespace = namespace
+        # Pass through the output parameters for now
+        self.is_out = et.attrib.get("direction", "") == "out"
         for x in et:
             if x.tag == xml.ns("type"):
                 self.name = x.get('name')
@@ -47,7 +49,7 @@ class TypeRef:
         return not self.name or self.name in TypeRef.built_in_types
 
     def cpp_type(self):
-        if not self.name:
+        if not self.name or self.is_out:
             return self.c_type
         repository = self.namespace.get_repository()
         typedef = repository.get_typedef(self.name, self.namespace.name)
@@ -69,7 +71,7 @@ class TypeRef:
             return varname
         repository = self.namespace.get_repository()
         typedef = repository.get_typedef(self.name, self.namespace.name)
-        if not typedef:
+        if not typedef or self.is_out:
             return varname
         return typedef.cast_from_c(varname)
 
@@ -78,6 +80,6 @@ class TypeRef:
             return varname
         repository = self.namespace.get_repository()
         typedef = repository.get_typedef(self.name, self.namespace.name)
-        if not typedef:
+        if not typedef or self.is_out:
             return varname
         return typedef.cast_to_c(varname, self.c_type)

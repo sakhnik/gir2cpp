@@ -23,8 +23,6 @@ class Method:
                 idx = 0
                 for y in x:
                     if y.tag == xml.ns("parameter"):
-                        if y.attrib.get("direction", "") == "out":
-                            raise NotImplementedError("out parameter")
                         name = y.attrib['name']
                         if name == '...':
                             self.is_vararg = True
