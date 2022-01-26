@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <functional>
+#include <cassert>
 #include <glib-object.h>
 
 namespace gir {

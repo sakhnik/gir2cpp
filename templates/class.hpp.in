@@ -27,10 +27,30 @@ class {{ cls_.name }}
 {%- endfor %}
 {
 public:
-    {{ cls_.name }}(::GObject *o = nullptr)
+    {{ cls_.name }}()
     {
+        _g_obj = nullptr;
+    }
+
+    {{ cls_.name }}(std::nullptr_t)
+    {
+        _g_obj = nullptr;
+    }
+
+    {{ cls_.name }}(::GObject *o)
+    {
+        {% if cls_.namespace.name != "GObject" -%}
+        assert(G_TYPE_CHECK_INSTANCE_TYPE(o, {{ cls_.get_type }}()));
+        {%- endif %}
         _g_obj = o;
     }
+
+    {% if cls_.namespace.name != "GObject" %}
+    {{ cls_.name }}({{ cls_.c_type }} *o)
+    {
+        _g_obj = reinterpret_cast<::GObject *>(o);
+    }
+    {% endif %}
 
     //{{ cls_.name }}({{ cls_.name }} &&o)
     //    : gir::Base{o}
