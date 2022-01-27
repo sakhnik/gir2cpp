@@ -78,6 +78,21 @@ public:
     //    return *this;
     //}
 
+    bool operator==(const {{ cls_.name }}& o) const
+    {
+        return _g_obj == o._g_obj;
+    }
+
+    bool operator!=(const {{ cls_.name }}& o) const
+    {
+        return !(*this == o);
+    }
+
+    operator bool() const
+    {
+        return _g_obj != nullptr;
+    }
+
     {% for m in cls_.get_plain_methods() %}
     {{ common.method_decl(m) }}
     {% endfor %}
