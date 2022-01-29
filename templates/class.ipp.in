@@ -8,6 +8,12 @@
 #include "{{ ns + '/' + cl }}.hpp"
 {% endfor %}
 
+#ifdef GIR_INLINE
+{% for inc in cls_.get_impl_includes() -%}
+#include "{{ inc }}.ipp"
+{% endfor %}
+#endif //GIR_INLINE
+
 namespace gir {
 namespace {{ cls_.namespace.name }} {
 

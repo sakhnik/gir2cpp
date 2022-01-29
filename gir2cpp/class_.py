@@ -62,6 +62,10 @@ class Class(MethodHolder):
         methods_includes = self.get_header_includes_for_methods()
         return set(d.replace('.', '/') for d in deps).union(methods_includes)
 
+    def get_impl_includes(self):
+        return set(d for d in self.get_header_includes()
+                   if not d.endswith('aliases'))
+
     def get_parents(self):
         def _fix_sep(s):
             return s.replace('.', '::')
