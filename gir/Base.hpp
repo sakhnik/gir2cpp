@@ -11,6 +11,12 @@ namespace gir {
 
 namespace GObject { class Object; }
 
+#ifdef GIR_INLINE
+#  define GIR_INLINE_DECL inline
+#else
+#  define GIR_INLINE_DECL
+#endif
+
 class Base
 {
 protected:

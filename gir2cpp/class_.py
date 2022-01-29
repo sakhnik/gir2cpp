@@ -88,7 +88,7 @@ class Class(MethodHolder):
         return parent.parent_implements_interface(cpp_type)
 
     def output(self, ns_dir):
-        for ext in ("hpp", "cpp"):
+        for ext in ("hpp", "ipp", "cpp"):
             template = self.get_repository().get_template(f"class.{ext}.in")
             fname = os.path.join(ns_dir, f"{self.name}.{ext}")
             with open(fname, 'w') as f:
