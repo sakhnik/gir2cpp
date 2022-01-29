@@ -1,7 +1,6 @@
 {%- import "common.hpp.in" as common %}
 
-#ifndef GIR_{{ cls_.namespace.name }}_{{ cls_.name }}_IPP_
-#define GIR_{{ cls_.namespace.name }}_{{ cls_.name }}_IPP_
+#pragma once
 
 #include "{{ cls_.name }}.hpp"
 {% for ns, cl in cls_.get_forward_decls() -%}
@@ -56,5 +55,3 @@ GIR_INLINE_DECL
 
 } //namespace {{ cls_.namespace.name }};
 } //namespace gir;
-
-#endif //GIR_{{ cls_.namespace.name }}_{{ cls_.name }}_IPP_
