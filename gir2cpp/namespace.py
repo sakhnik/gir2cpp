@@ -1,5 +1,5 @@
 from .xml import Xml
-from .alias import Alias, AliasValue
+from .alias import Alias
 from .class_ import Class, Interface
 from .enumeration import Enumeration
 from .config import Config
@@ -30,9 +30,9 @@ class Namespace:
             xml.ns("enumeration"): Enumeration,
             xml.ns("alias"): Alias,
             xml.ns("callback"): Alias,
-            # TODO: handle records, bitfields like enumerations
+            # TODO: handle records like enumerations
             xml.ns("record"): Alias,
-            xml.ns("bitfield"): AliasValue,
+            xml.ns("bitfield"): Enumeration,
         }
 
         for x in et:
