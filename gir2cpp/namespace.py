@@ -51,6 +51,9 @@ class Namespace:
                 continue
             self.typedefs[name] = typedef_cl(x, self, xml, self.config)
 
+    def fqname(self):
+        return f"gir::{self.name}"
+
     def get_cpp_identifier(self, name: str):
         if '.' in name:
             return name.replace('.', '::')

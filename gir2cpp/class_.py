@@ -30,7 +30,7 @@ class Class(MethodHolder):
 
         ignore = frozenset(xml.ns(i) for i in (
             "property", "doc", "source-position",
-            "field", "function", "prerequisite", "doc-deprecated",
+            "field", "prerequisite", "doc-deprecated",
         ))
 
         for x in et:
@@ -106,7 +106,7 @@ class Class(MethodHolder):
         return f"reinterpret_cast<{refctype}>({varname}.g_obj())"
 
     def cpp_type(self, decl):
-        return f"{self.namespace.name}::{self.name}"
+        return f"{self.namespace.fqname()}::{self.name}"
 
     def c_type_decl(self):
         return f"{self.c_type} *"

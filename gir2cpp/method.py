@@ -64,6 +64,14 @@ class Constructor(Method):
         return True
 
 
+class StaticFunc(Method):
+    def __init__(self, et: ET, class_, xml: Xml, config: Config):
+        Method.__init__(self, et, class_, xml, config)
+
+    def is_static(self):
+        return True
+
+
 class Signal(Method):
     def __init__(self, et: ET, class_, xml: Xml, config: Config):
         Method.__init__(self, et, class_, xml, config)

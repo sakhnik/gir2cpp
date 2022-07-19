@@ -2,7 +2,7 @@ from .xml import Xml
 from .typedef import TypeDef
 from .alias import Alias
 from .config import Config
-from .method import Method, Constructor, Signal
+from .method import Method, Constructor, Signal, StaticFunc
 import xml.etree.ElementTree as ET
 from itertools import chain
 
@@ -15,7 +15,7 @@ class MethodHolder(TypeDef):
         self.name = et.attrib.get('name')
         self.method_names = set()  # For deduplication
         self.method_tags = frozenset((
-            xml.ns("method"), xml.ns("virtual-method"),
+            xml.ns("method"), xml.ns("virtual-method"), xml.ns("function"),
             xml.ns("constructor"), xml.ns('signal', 'glib')
         ))
 
@@ -32,6 +32,8 @@ class MethodHolder(TypeDef):
                     self.append_method(Method(x, self, xml, config))
                 elif x.tag == xml.ns('virtual-method'):
                     self.append_method(Method(x, self, xml, config))
+                elif x.tag == xml.ns('function'):
+                    self.append_method(StaticFunc(x, self, xml, config))
                 elif x.tag == xml.ns('constructor'):
                     self.append_method(Constructor(x, self, xml, config))
                 elif x.tag == xml.ns('signal', 'glib'):

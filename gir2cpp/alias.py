@@ -22,13 +22,14 @@ class Alias(TypeDef):
 
     def cpp_type(self, decl):
         if not decl:
-            return f"{self.namespace.name}::{self.name} *"
-        return decl.replace(self.c_type, f"{self.namespace.name}::{self.name}")
+            return f"{self.namespace.fqname()}::{self.name} *"
+        return decl.replace(self.c_type,
+                            f"{self.namespace.fqname()}::{self.name}")
 
     def c_type_decl(self):
         if self.c_type:
             return f"{self.c_type} *"
-        return f"{self.namespace.name}::{self.name} *"
+        return f"{self.namespace.fqname()}::{self.name} *"
 
 
 class AliasValue(Alias):
@@ -37,10 +38,11 @@ class AliasValue(Alias):
 
     def cpp_type(self, decl):
         if not decl:
-            return f"{self.namespace.name}::{self.name}"
-        return decl.replace(self.c_type, f"{self.namespace.name}::{self.name}")
+            return f"{self.namespace.fqname()}::{self.name}"
+        return decl.replace(self.c_type,
+                            f"{self.namespace.fqname()}::{self.name}")
 
     def c_type_decl(self):
         if self.c_type:
             return f"{self.c_type}"
-        return f"{self.namespace.name}::{self.name}"
+        return f"{self.namespace.fqname()}::{self.name}"
