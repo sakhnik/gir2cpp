@@ -39,7 +39,7 @@ public:
 
     {{ cls_.name }}(::GObject *o)
     {
-        {% if cls_.namespace.name != "GObject" -%}
+        {% if cls_.can_assert_type() -%}
         assert(!o || G_TYPE_CHECK_INSTANCE_TYPE(o, {{ cls_.get_type }}()));
         {%- endif %}
         _g_obj = o;

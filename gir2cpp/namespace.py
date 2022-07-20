@@ -1,6 +1,6 @@
 from .xml import Xml
 from .alias import Alias
-from .class_ import Class, Interface
+from .class_ import Class, Interface, Record
 from .enumeration import Enumeration
 from .config import Config
 import xml.etree.ElementTree as ET
@@ -30,8 +30,7 @@ class Namespace:
             xml.ns("enumeration"): Enumeration,
             xml.ns("alias"): Alias,
             xml.ns("callback"): Alias,
-            # TODO: handle records like enumerations
-            xml.ns("record"): Alias,
+            xml.ns("record"): Record,
             xml.ns("bitfield"): Enumeration,
         }
 

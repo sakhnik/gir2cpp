@@ -22,7 +22,7 @@ class Class(MethodHolder):
         # Resolve clash with the namespace GObject
         if self.c_type == "GObject":
             self.c_type = "::GObject"
-        self.get_type = et.attrib[xml.ns('get-type', 'glib')]
+        self.get_type = et.attrib.get(xml.ns('get-type', 'glib'))
 
         self.parent = et.attrib.get('parent')
         if config.skip_check(self.namespace.name, self.parent):
@@ -111,7 +111,18 @@ class Class(MethodHolder):
     def c_type_decl(self):
         return f"{self.c_type} *"
 
+    def can_assert_type(self):
+        return self.namespace.name != "GObject" and self.get_type is not None
+
 
 class Interface(Class):
     def __init__(self, et: ET, namespace, xml: Xml, config: Config):
         Class.__init__(self, et, namespace, xml, config)
+
+
+class Record(Class):
+    def __init__(self, et: ET, namespace, xml: Xml, config: Config):
+        Class.__init__(self, et, namespace, xml, config)
+
+    def can_assert_type(self):
+        return False
