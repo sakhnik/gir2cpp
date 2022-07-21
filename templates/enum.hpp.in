@@ -27,6 +27,11 @@ public:
     {
     }
 
+    {{ enum_.name }}(int v)
+        : value{static_cast<E>(v)}
+    {
+    }
+
     operator {{ enum_.c_type }}() const
     {
         return static_cast<{{ enum_.c_type }}>(value);
