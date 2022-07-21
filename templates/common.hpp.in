@@ -5,7 +5,7 @@
         {% for pname, ptype in m.params %}
         {{- ptype.cpp_type() }} {{ pname }} {{ "," if not loop.last else "" }}
         {% endfor -%}
-    );
+    ) {{ "const" if not m.is_static() else "" }};
 {%- endmacro %}
 
 {% macro method_def(cl, m) -%}
@@ -14,7 +14,7 @@
     {% for pname, ptype in m.params %}
     {{- ptype.cpp_type() }} {{ pname }} {{- "," if not loop.last else "" }}
     {% endfor -%}
-)
+) {{ "const" if not m.is_static() else "" }}
 {%- endmacro %}
 
 {% macro signal_params(cl, m) -%}
