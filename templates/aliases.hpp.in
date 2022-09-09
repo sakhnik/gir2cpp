@@ -1,7 +1,9 @@
 #pragma once
 
 {% for i in ns.get_c_includes() %}
-#include <{{ i }}>
+#if __has_include (<{{ i }}>)
+# include <{{ i }}>
+#endif
 {%- endfor %}
 
 namespace gir {
