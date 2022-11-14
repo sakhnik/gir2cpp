@@ -4,6 +4,9 @@
 
 #include "aliases.hpp"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 namespace gir {
 namespace {{ enum_.namespace.name }} {
 
@@ -46,3 +49,5 @@ public:
 
 } //namespace {{ enum_.namespace.name }};
 } //namespace gir;
+
+#pragma GCC diagnostic pop
